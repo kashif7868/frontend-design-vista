@@ -1,0 +1,140 @@
+/* Default styles - for large devices */
+#footer {
+  background-color: #fff;
+  margin: 5px auto;
+  overflow: hidden;
+  font-family: "Oswald", sans-serif;
+}
+.container-rg-line {
+  display: flex;
+  padding: 20px 0px;
+  border-top: 1px solid #ccc;
+  align-items: center;
+}
+.copyright {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  position: relative;
+  right: 46px;
+}
+.container-rg-line img {
+  width: 80px;
+  height: auto;
+  position: relative;
+  left: 75px;
+}
+
+.container-rg-line p {
+  font-size: 14px;
+  padding: 0px 5px;
+  position: relative;
+  left: 90px;
+  top: 5px;
+}
+
+.container-rg-line a {
+  text-decoration: none;
+  color: #333;
+  transition: all 0.3s ease-in-out;
+}
+
+.container-rg-line a:hover {
+  color: #1900f8;
+  transform: scale(0.98);
+}
+
+.social-icons {
+  display: flex;
+  justify-content: center;
+  text-align: center;
+  align-items: center;
+  position: absolute;
+  right: 3vh;
+}
+
+.social-icons a {
+  margin: 0px 10px;
+}
+.social-icons a svg {
+  background-color: #0021db;
+  color: #fff;
+  padding: 1vh 1vh;
+  font-size: 30px;
+  border-radius: 6vh;
+  transition: all ease-in-out 0.3s;
+}
+.social-icons a svg:hover {
+  background-color: #1900f8;
+  color: #fff6c6;
+  transform: scale(1.2);
+}
+
+/* Medium Devices (Tablets and Larger Phones) */
+@media (max-width: 1024px) {
+  .container-rg-line {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+  }
+
+  .copyright {
+    position: relative;
+    right: 0;
+  }
+
+  .container-rg-line img {
+    width: 70px;
+    left: 0;
+  }
+
+  .container-rg-line p {
+    left: 0;
+    top: 0;
+    text-align: center;
+  }
+
+  .social-icons {
+    position: static;
+    margin-top: 10px;
+  }
+}
+
+/* Small Devices (Mobile Phones and Small Tablets) */
+@media (max-width: 720px) {
+  .container-rg-line {
+    flex-direction: column;
+    align-items: center;
+    padding: 10px 0;
+  }
+
+  .copyright {
+    flex-direction: column;
+    right: 0;
+  }
+
+  .container-rg-line img {
+    width: 60px;
+    left: 0;
+  }
+
+  .container-rg-line p {
+    left: 0;
+    top: 0;
+    text-align: center;
+    padding: 5px 0;
+  }
+
+  .social-icons {
+    position: static;
+    margin-top: 10px;
+    flex-wrap: wrap;
+  }
+
+  .social-icons a svg {
+    font-size: 25px;
+    padding: 0.8vh 0.8vh;
+  }
+}

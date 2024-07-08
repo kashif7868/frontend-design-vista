@@ -1,0 +1,829 @@
+.service-main-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  background-color: #f0f0f0;
+}
+.service-sub-container {
+  width: 100%;
+  max-width: 1200px;
+  background: #fff;
+  padding: 20px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border-radius: 10px;
+}
+/* Service List and Items Styles */
+/* servicePage.css */
+
+.service-list {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+  gap: 20px;
+  margin-top: 20px;
+}
+
+.service-items-container {
+  background: #fff;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.service-items-container:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+}
+
+.service-item {
+  position: relative;
+  overflow: hidden;
+  border-radius: 10px;
+}
+
+.service-item img {
+  width: 100%;
+  height: 320px;
+  object-fit: cover;
+  transition: transform 0.3s ease, opacity 0.3s ease;
+}
+
+.service-item img:hover {
+  transform: scale(1.05);
+}
+
+.service-content-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  padding: 15px;
+  background: rgba(161, 175, 223, 0.8);
+  color: #fff;
+  transition: opacity 0.3s ease;
+  opacity: 0;
+}
+
+.service-item:hover .service-content-container {
+  opacity: 1;
+}
+
+.service-content-sub-con {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.service-content-sub-con h3 {
+  display: block;
+  font-size: 18px;
+  margin-bottom: 5px;
+  color: #000;
+  width: 80%;
+  transition: all 0.3s ease;
+}
+
+.service-content-sub-con p {
+  font-size: 16px;
+  font-weight: 800;
+  color: #000;
+  width: 35%;
+  transition: all 0.3s ease;
+}
+.service-content-sub-con h3:hover,
+.service-content-sub-con p:hover {
+  text-decoration: underline;
+  cursor: pointer;
+}
+.service-item-buttons {
+  display: flex;
+  justify-content: flex-end;
+  position: absolute;
+  top: 10px;
+  right: 20px;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.service-item:hover .service-item-buttons {
+  opacity: 1;
+}
+
+.service-setting-drop-down-manu {
+  cursor: pointer;
+}
+
+.service-setting-drop-down-manu svg {
+  color: #ffd700;
+  font-size: 24px !important;
+  transition: all 0.5s ease-in-out;
+}
+
+.service-setting-drop-down-manu svg:hover {
+  color: #ffd700;
+  transform: scale(1.05);
+}
+
+.dropdown-content {
+  position: absolute;
+  right: 6px;
+  top: 30px;
+  background-color: #fff;
+  min-width: 150px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  z-index: 13;
+  border-radius: 8px;
+  padding: 8px 0;
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+
+.dropdown-content button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  background-color: transparent;
+  border: none;
+  padding: 12px 20px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #333;
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.dropdown-content button:hover {
+  background-color: #f9f9f9;
+  color: #007bff;
+}
+
+/* ********************************* */
+/* ********************************* */
+/* ********************************* */
+/* Service Container Styles */
+.service-container {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  background-color: #fbf9f9;
+  width: 20rem;
+  height: 18rem;
+  border: 1px dotted #9b9b9b;
+  border-radius: 5px;
+  margin: 48px 0px;
+}
+
+/* Add Service Button Styles */
+.service-item-add {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.service-icon {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #dee8ff;
+  border-radius: 50%;
+  width: 75px;
+  height: 75px;
+  margin-bottom: 10px;
+}
+
+.service-icon svg {
+  font-size: 30px;
+  color: #007bff;
+}
+
+.service-project-btn {
+  background-color: #fff;
+  color: #000;
+  padding: 6px 36px;
+  border-radius: 22px;
+  border: none;
+  font-size: 15px;
+  font-weight: 600;
+  box-shadow: 0px 0px 1px 1px #ddd;
+  transition: all 0.3s ease;
+}
+
+.service-project-btn:hover {
+  background-color: #f7f7f7;
+}
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-25px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+.popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  overflow-y: auto;
+}
+
+.popup-inner {
+  background: #ffffff;
+  padding: 40px;
+  border-radius: 10px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  width: 100%;
+  height: 40rem;
+  max-width: 75rem;
+  position: relative;
+  margin: 20px;
+  animation: fadeIn 0.3s ease-out, slideIn 0.3s ease-out;
+}
+
+.close-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background: none;
+  border: none;
+  font-size: 20px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: #007bff;
+}
+
+.create-service-container {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px;
+}
+
+.service-side-bar-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #f5f8ff;
+  border-radius: 3px;
+  height: 100%;
+  padding: 40px;
+  position: relative;
+  width: 100%;
+}
+
+.service-add-image {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+}
+
+.service-icon {
+  margin-bottom: 10px;
+  background-color: #a2d0ff87;
+  border-radius: 76px;
+  padding: 10px 16px;
+}
+
+.service-icon svg {
+  font-size: 30px;
+  color: #007bff;
+}
+
+.image-upload-label {
+  background-color: #0057ff;
+  padding: 3px 26px;
+  border-radius: 36px;
+  transition: all 0.3s ease;
+}
+
+.image-upload-label p {
+  color: #fff;
+  text-align: center;
+  position: relative;
+  top: 8px;
+}
+
+.image-upload-label:hover {
+  background-color: #024ada;
+  cursor: pointer;
+  transform: scale(0.98);
+}
+.image-preview {
+  margin-top: 10px;
+}
+
+.image-preview img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 5px;
+}
+.remove-image-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: #0055ff3b;
+  border: none;
+  cursor: pointer;
+  padding: 10px 10px;
+  border-radius: 50%;
+  transition: all 0.3s ease;
+}
+.remove-image-btn:hover {
+  transform: scale(0.9);
+  background-color: #ffd9003d;
+}
+
+.remove-image-btn .remove-icon {
+  font-size: 30px;
+}
+/* ************************** */
+/* ************************** */
+/* ************************** */
+
+.service-side-bar-right {
+  width: 100%;
+  padding: 20px;
+  box-sizing: border-box;
+  background-color: #ffffff;
+  box-shadow: 0px 4px 5px 5px #f3f3f3;
+}
+
+.service-details {
+  margin-bottom: 20px;
+  height: 28rem;
+  overflow-y: auto;
+}
+
+.service-details h3 {
+  font-size: 24px;
+  font-weight: 600;
+}
+
+.service-details p {
+  font-size: 14px;
+}
+
+.service-details h4 {
+  font-size: 12px;
+  font-weight: 600;
+  color: #333;
+}
+
+.service-input-name-container {
+  position: relative;
+  margin: 20px 0px;
+}
+
+.title-input {
+  display: block;
+  width: calc(100% - 20px);
+  padding: 8px 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  outline: none;
+  background-color: transparent;
+  transition: border-color 0.3s ease;
+}
+.title-input:focus {
+  border-color: #ffa500;
+}
+
+/* Input label */
+.input-label-service {
+  position: absolute;
+  top: 10px;
+  left: 5px;
+  font-size: 16px;
+  color: #999999;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.title-input:focus + .input-label-service,
+.title-input:not(:placeholder-shown) + .input-label-service {
+  top: -20px;
+  font-size: 12px;
+  color: #006fe6;
+}
+
+/* ******************************************** */
+/* ******************************************** */
+/* ******************************************** */
+.service-input-textarea-container {
+  position: relative;
+  margin: 20px 0px;
+}
+
+.text-area-input {
+  display: block;
+  width: calc(100% - 20px);
+  padding: 8px 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  outline: none;
+  background-color: transparent;
+  transition: border-color 0.3s ease;
+  resize: none;
+  height: 150px;
+}
+
+.text-area-input:focus {
+  border-color: #ffa500;
+}
+
+/* Textarea label */
+.textarea-label-service {
+  position: absolute;
+  top: 10px;
+  left: 5px;
+  font-size: 16px;
+  color: #999999;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.text-area-input:focus + .textarea-label-service,
+.text-area-input:not(:placeholder-shown) + .textarea-label-service {
+  top: -20px;
+  font-size: 12px;
+  color: #006fe6;
+}
+
+
+
+/* ******************************************** */
+/* ******************************* */
+/* ******************************************** */
+.categories-choose-service {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.categories-choose-service h4 {
+  font-size: 14px;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.categories-choose-service span {
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.5;
+  color: #666;
+  margin-bottom: 16px;
+}
+
+.category-selection {
+  display: flex;
+  align-items: center;
+}
+
+.category-btn {
+  display: flex;
+  align-items: center;
+  padding: 8px 16px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+}
+
+.category-btn:hover {
+  background-color: #f0f0f0;
+  border-color: #ccc;
+}
+
+.category-icon {
+  margin-right: 8px;
+  font-size: 16px;
+}
+
+.selected-categories {
+  font-size: 14px;
+  color: #333;
+  margin-left: 16px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* ******************************************** */
+/* *************Category Popup ***************** */
+/* ******************************************** */
+/* Add this CSS to your existing CSS file */
+.category-popup {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.6);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1000;
+  animation: fadeIn 0.5s ease-out; /* Apply fade-in animation */
+}
+
+.category-popup-inner {
+  background: #fff;
+  padding: 20px;
+  width: 90%;
+  max-width: 500px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  position: relative;
+  animation: slideIn 0.5s ease-out; /* Apply slide-in animation */
+}
+
+.close-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: transparent;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+}
+
+.close-btn:hover {
+  color: #ff0000;
+}
+
+.category-popup-inner h2 {
+  margin-top: 0;
+  font-size: 20px;
+  font-weight: 600;
+  margin-bottom: 10px;
+}
+
+.category-popup-inner p {
+  font-size: 14px;
+  margin-bottom: 20px;
+  color: #666;
+}
+
+.category-list {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 20px;
+}
+
+.category-list label {
+  font-size: 14px;
+  margin-bottom: 10px;
+  display: flex;
+  align-items: center;
+}
+
+.category-list input[type="radio"] {
+  margin-right: 10px;
+}
+
+.popup-buttons {
+  display: flex;
+  justify-content: space-between;
+}
+
+.done-btn,
+.cancel-btn {
+  padding: 8px 16px;
+  font-size: 14px;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.done-btn {
+  background-color: #007bff;
+  color: #fff;
+}
+
+.done-btn:hover {
+  background-color: #0056b3;
+}
+
+.cancel-btn {
+  background-color: #f0f0f0;
+  color: #333;
+}
+
+.cancel-btn:hover {
+  background-color: #ccc;
+}
+
+.selected-categories {
+  display: flex;
+  flex-wrap: wrap;
+}
+
+.selected-category {
+  background-color: #f0f0f0;
+  border-radius: 16px;
+  padding: 5px 20px;
+  margin: 10px 5px;
+}
+
+.selected-category > svg {
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+/* Keyframes for fade in and slide in */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20px);
+  }
+  to {
+    transform: translateY(0);
+  }
+}
+
+/* ******************************************** */
+/* *************_************************* */
+/* ******************************************** */
+
+.service-feactured-pr {
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.delivery-input,
+.revisions-input {
+  width: 231px;
+  padding: 8px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+}
+
+option {
+  padding: 6px 12px;
+  font-size: 14px;
+  line-height: 20px;
+}
+
+.delivery-input:focus,
+.revisions-input:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px rgba(81, 203, 238, 0.5);
+}
+
+option:hover {
+  background-color: #f0f0f0;
+}
+
+.categories-choose-service {
+  margin-top: 20px;
+}
+
+.category-selection {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.selected-categories {
+  font-weight: bold;
+}
+
+/* ******************************************* */
+/* ******************************************* */
+/* ******************************************* */
+.service-price {
+  margin-top: 20px;
+}
+.price-input-main-container {
+  position: relative;
+  margin: 20px 0;
+}
+
+.input-service-price-container {
+  position: relative;
+  width: 100%;
+}
+
+.price-input {
+  display: flex;
+  width: calc(100% - 115px);
+  padding: 8px 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 7px;
+  outline: none;
+  background-color: transparent;
+  transition: border-color 0.3s ease;
+}
+
+.price-input:focus {
+  border-color: #ffa500;
+}
+
+/* Price label */
+.price-label-service {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 16px;
+  color: #999999;
+  transition: all 0.3s ease;
+  pointer-events: none;
+}
+
+.price-input:focus + .price-label-service,
+.price-input:not(:placeholder-shown) + .price-label-service {
+  top: -20px;
+  font-size: 12px;
+  color: #006fe6;
+}
+
+/* Input highlight */
+.input-highlight {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  height: 2px;
+  width: 0;
+  background-color: #007bff;
+  transition: width 0.3s ease;
+}
+
+.price-input:focus ~ .input-highlight {
+  width: 100%;
+}
+
+/* Error message */
+.message-required {
+  color: red;
+  font-size: 14px;
+  margin-top: 5px;
+}
+
+.currency {
+  background-color: #f1f1f1;
+  padding: 10px 14px;
+  border-radius: 7px;
+  position: absolute;
+  right: 15px;
+  bottom: 0;
+}
+
+.create-service-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+.create-service-btn button {
+  background-color: #0057ff;
+  color: white;
+  padding: 8px 176px;
+  border: none;
+  border-radius: 22px;
+  transition: all 0.3s ease;
+}
+
+.create-service-btn button:hover {
+  background-color: #024ada;
+  transform: scale(0.98);
+}

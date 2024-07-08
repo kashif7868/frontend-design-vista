@@ -1,0 +1,179 @@
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 1001;
+  animation: fadeInOverlay 0.3s ease-out forwards;
+}
+
+.modal-content {
+  background-color: #ffffff;
+  padding: 30px;
+  border-radius: 12px;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  width: 90%;
+  max-width: 600px;
+  max-height: 90%;
+  position: relative;
+  animation: slideIn 0.4s ease forwards;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  border-bottom: 1px solid #ddd;
+  padding-bottom: 10px;
+}
+
+.modal-header h4 {
+  margin: 0;
+  font-size: 1.4rem;
+  font-weight: 700;
+  color: #333;
+}
+
+.modal-header button {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  color: #aaa;
+  transition: color 0.2s ease;
+}
+
+.modal-header button:hover {
+  color: #ff0000; /* Red color on hover */
+}
+
+.modal-body {
+  padding: 20px 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.company-logo {
+  display: flex;
+  margin: 0 auto;
+  position: relative;
+  top: 25px;
+}
+
+.company-logo img {
+  max-width: 100%;
+  max-height: 150px; /* Reduced height to fit better */
+  object-fit: contain;
+  transition: transform 0.3s ease-in-out;
+}
+
+.company-logo img:hover {
+  transform: scale(1.1); /* Scale up slightly on hover */
+}
+
+.all-updates-container {
+  text-align: center;
+  width: 100%;
+  overflow-y: auto;
+  max-height: 400px;
+  padding: 0 10px;
+}
+
+.all-updates-container .company-update {
+  margin-bottom: 20px; /* Increased margin between updates */
+}
+
+.all-updates-container .update-details {
+  padding: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.all-updates-container .update-details h4 {
+  font-size: 1.2rem;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.all-updates-container .update-details .update-image img {
+  width: 100%;
+  max-width: 100%;
+  object-fit: cover;
+  border-radius: 8px;
+  transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  margin-bottom: 15px;
+}
+
+.all-updates-container p {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #555;
+  margin-top: 10px;
+  text-align: justify;
+}
+
+/* Keyframes for animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideIn {
+  from {
+    transform: translateY(-20%);
+    opacity: 0;
+  }
+  to {
+    transform: translateY(0);
+    opacity: 1;
+  }
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+  .modal-content {
+    width: 95%;
+    max-width: 100%;
+  }
+
+  .company-logo img {
+    max-height: 120px; /* Adjusted height for smaller screens */
+  }
+}
+
+@media (max-width: 480px) {
+  .modal-content {
+    padding: 20px;
+  }
+
+  .modal-header h4 {
+    font-size: 1.2rem;
+  }
+
+  .modal-header button {
+    font-size: 1.3rem;
+  }
+
+  .company-logo img {
+    max-height: 100px; /* Further reduced height for very small screens */
+  }
+
+  .company-details p {
+    font-size: 0.9rem;
+  }
+
+  .company-details span {
+    font-size: 0.8rem;
+  }
+}

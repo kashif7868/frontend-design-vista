@@ -1,0 +1,13 @@
+[
+    {
+      "image": "path/to/image1.jpg",
+      "imageName": "Sample Image 1",
+      "brandName": "Brand 1"
+    },
+    {
+      "image": "path/to/image2.jpg",
+      "imageName": "Sample Image 2",
+      "brandName": "Brand 2"
+    }
+  ]
+  

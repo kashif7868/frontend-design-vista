@@ -1,0 +1,217 @@
+.banner-container-help {
+  background-image: url("../../images/help-banner.webp");
+  background-size: cover;
+  background-position: center;
+  height: 80vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #333;
+  position: relative;
+}
+
+.banner-help {
+  text-align: center;
+  color: #fff;
+}
+
+.banner-content-help h1 {
+  font-size: 6vh;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin: 0;
+  text-shadow: 0px 13px 10px rgb(0 0 0 / 80%); 
+  opacity: 0; 
+}
+
+.banner-content-help p {
+  font-size: 4vh;
+  margin-top: 1rem;
+  text-shadow: 0px 13px 10px rgb(0 0 0 / 80%);
+  opacity: 0; /* Start with invisible for animation */
+}
+.banner-content-help > * {
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+.help-main-container {
+  display: flex;
+  max-width: 1200px;
+  padding: 20px;
+  width: 100%;
+  margin: 0 auto;
+  justify-content: center;
+}
+
+.help-sidebar {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+  padding: 20px;
+  background-color: #fff;
+  margin: 10px 40px;
+  border-radius: 8px;
+  width: 100%;
+  max-width: 267px;
+  border-left: 1px solid #eee;
+  border-right: 1px solid #eee;
+}
+
+.help-sidebar h2 {
+  font-size: 1.8rem;
+  margin-bottom: 15px;
+}
+
+.help-sidebar ul {
+  list-style: none;
+  padding: 0;
+}
+
+.help-sidebar li {
+  margin-bottom: 10px;
+}
+
+.help-sidebar span {
+  display: block;
+  padding: 10px 0;
+  font-weight: bold;
+  cursor: pointer;
+  border-top: 1px solid #eee;
+  border-bottom: 1px solid #eee;
+  transition: color 0.3s;
+}
+.help-sidebar span:hover {
+  color: #0e00e7;
+  transform: scale(0.98);
+}
+.help-sidebar ul li span.active {
+  color: #ff8000;
+}
+/* ************************ */
+/* ************************ */
+/* ************************ */
+.help-content {
+  flex: 2 1;
+  margin: 40px 0px;
+  border-radius: 8px;
+  width: 100%;
+  padding: 0px 20px;
+  border-left: 1px solid #eee;
+  border-right: 1px solid #eee;
+}
+
+.help-content h2 {
+  font-size: 1.3rem;
+  margin-bottom: 15px;
+}
+
+.help-content p {
+  font-size: 1.2rem;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.faq-item {
+  margin-bottom: 20px;
+}
+
+.faq-item h3 {
+  font-size: 1.5rem;
+  margin-bottom: 10px;
+}
+/* ****************************** */
+/* ****************************** */
+/* ****************************** */
+#contact-form {
+  max-width: 750px;
+  margin: 4px auto;
+}
+
+.form-group {
+  position: relative;
+  margin-bottom: 30px;
+}
+
+.input-u-name,
+.input-u-email,
+.input-u-message {
+  width: 100%;
+  padding: 5px 10px;
+  font-size: 16px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  background-color: #fff;
+  transition: border-color 0.2s;
+}
+.input-u-name:focus,
+.input-u-email:focus,
+.input-u-message:focus {
+  border-color: #ff8000;
+  outline: none;
+}
+.input-u-message {
+  width: 100%;
+  height: 12rem;
+  resize: none;
+  padding: 10px 20px;
+  border: 1px solid #cccccc;
+  border-color: #ffa500;
+  border-radius: 4px;
+  font-size: 16px;
+  box-sizing: border-box;
+  transition: border-color 0.3s ease;
+}
+.input-u-name:focus,
+.input-u-email:focus,
+.input-u-message:focus {
+  border-color: #ffa500;
+}
+.form-group .input-u-message:focus + label,
+.form-group .input-u-message:not(:placeholder-shown) + label {
+  top: -8px;
+  left: 10px;
+  font-size: 12px;
+  color: #0400ff;
+  background-color: #ffffff;
+  padding: 0 5px;
+}
+.input-u-label {
+  position: absolute;
+  top: 10px;
+  left: 10px;
+  font-size: 12px;
+  color: #999;
+  pointer-events: none;
+  transition: all 0.2s ease-in-out;
+}
+
+.input-u-label.filled {
+  top: -8px;
+  left: 10px;
+  font-size: 12px;
+  color: #0400ff;
+  background-color: #f9f9f9;
+  padding: 0 5px;
+}
+
+.submit-btn {
+  background-color: #0400ff;
+  color: #fff;
+  border: none;
+  width: 100%;
+  max-width: 146px;
+  font-size: 16px;
+  padding: 7px 0px;
+  border-radius: 10px;
+  transition: all 0.3s ease;
+}
+
+.submit-btn:hover {
+  background-color: #ffa500;
+  transform: translateY(-2px);
+}
+
+.success-message {
+  color: #0400ff;
+  font-size: 18px;
+  margin-top: 10px;
+}
