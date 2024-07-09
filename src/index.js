@@ -23,12 +23,12 @@ root.render(
         draggable
         pauseOnHover
         toastStyle={{
-          backgroundColor: "#0021db",
-          color: "#fff",
-          borderColor: "#ffa500",
+          backgroundColor: "#fff",
+          color: "#0030dd",
+          borderColor: "#0030dd",
         }}
         bodyStyle={{
-          color: "#000",
+          color: "#ffa500",
         }}
         progressStyle={{
           background: "#ffa500",

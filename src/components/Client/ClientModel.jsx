@@ -1,46 +1,37 @@
 import React, { useState, useEffect } from "react";
-import "../../assets/css/clientModel.css"; // Import the CSS file
-import { FaTimes } from "react-icons/fa"; // Import close icon from react-icons/fa
-import Swal from "sweetalert2"; // Import SweetAlert library
-import axios from "axios"; // Import Axios for API requests
+import axios from "axios";
+import "../../assets/css/clientModel.css";
+import { FaTimes } from "react-icons/fa";
+import { ToastContainer, toast } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const ClientModel = ({ isOpen, onClose, messageId }) => {
   const [selectedMessage, setSelectedMessage] = useState(null);
 
-  // Fetch the message from the API when the component mounts or messageId changes
   useEffect(() => {
-    if (isOpen && messageId) {
-      axios
-        .get(`http://localhost:3000/api/message/${messageId}`)
-        .then((response) => {
-          setSelectedMessage(response.data);
-        })
-        .catch((error) => {
-          console.error("There was an error fetching the message!", error);
-        });
-    }
-  }, [isOpen, messageId]);
+    const fetchMessage = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/api/message/${messageId}`);
+        setSelectedMessage(response.data);
+      } catch (error) {
+        console.error("Error fetching message:", error);
+      }
+    };
 
-  // Function to handle accepting the message
+    if (messageId) {
+      fetchMessage();
+    }
+  }, [messageId]);
+
   const handleAccept = () => {
-    Swal.fire({
-      icon: "success",
-      title: "Message Accepted",
-      text: "You have accepted the message successfully!",
-    });
+    toast.success("You have accepted the message successfully!");
   };
 
-  // Function to handle canceling the message
   const handleCancel = () => {
-    Swal.fire({
-      icon: "info",
-      title: "Message Cancelled",
-      text: "You have cancelled viewing the message.",
-    });
+    toast.info("You have cancelled viewing the message.");
     onClose();
   };
 
-  // Conditionally render the modal overlay if isOpen is true
   if (!isOpen) {
     return null;
   }
@@ -48,10 +39,11 @@ const ClientModel = ({ isOpen, onClose, messageId }) => {
   return (
     <div className="modal-overlay">
       <div className="client-modal-container">
+        <ToastContainer />
         <button className="modal-close-btn" onClick={onClose}>
           <FaTimes />
         </button>
-        {selectedMessage && (
+        {selectedMessage ? (
           <>
             <div className="client-details">
               <h3>{selectedMessage.companyName}</h3>
@@ -69,6 +61,8 @@ const ClientModel = ({ isOpen, onClose, messageId }) => {
               </button>
             </div>
           </>
+        ) : (
+          <p>Loading...</p>
         )}
       </div>
     </div>

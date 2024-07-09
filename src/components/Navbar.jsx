@@ -193,7 +193,6 @@ const Navbar = () => {
     activeProfile === 'designer' ? designerProfile : hireDesignerProfile; // Use activeProfile
   const userProfilePicture = profileData?.profilePicture || defaultUserPicture;
 
-
   const handleProfileClick = (profile) => {
     setActiveProfile(profile); // Set active profile
     setOpenMenu(null); // Close any open menu
@@ -430,10 +429,7 @@ const Navbar = () => {
         <ClientModel
           isOpen={showClientModal}
           onClose={handleCloseClientModal}
-          name={selectedMessage.companyName}
-          image={userProfilePicture}
-          message={selectedMessage.note}
-          dateTime={new Date(selectedMessage.interviewDate).toLocaleString()}
+          messageId={selectedMessage.id} // Pass messageId
         />
       )}
     </header>
