@@ -3,12 +3,13 @@ import { IoCaretBack } from "react-icons/io5";
 import { Link } from "react-router-dom";
 import "../../assets/css/pagesCss/settings.css";
 import { useAuth } from "../../context/authContext";
-import { useDispatch } from 'react-redux';
-import { deleteHireDesignerProfile } from "../../app/features/hireDesignerSlice";
+import { useDispatch } from "react-redux";
+import { deleteHireDesigner } from "../../app/features/hireDesignerSlice";
+import { deleteDesignerProfile, clearProfile } from "../../app/features/designerSlice";
 import Swal from "sweetalert2";
 
 const Setting = () => {
-  const { user, deleteAccount, deleteDesignerProfile } = useAuth();
+  const { user, deleteAccount } = useAuth();
   const dispatch = useDispatch();
 
   const [email, setEmail] = useState(user ? user.email : "");
@@ -83,7 +84,8 @@ const Setting = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await dispatch(deleteHireDesignerProfile(user.id)); // Assuming user.id is the profile ID
+          // Make sure to pass the correct ID
+          await dispatch(deleteHireDesigner(user.id)).unwrap();
           Swal.fire({
             title: "Profile Deleted",
             text: "Your hire designer profile has been successfully deleted.",
@@ -112,7 +114,8 @@ const Setting = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          await deleteDesignerProfile();
+          await dispatch(deleteDesignerProfile(user.id)).unwrap();
+          dispatch(clearProfile());
           Swal.fire({
             title: "Profile Deleted",
             text: "Your designer profile has been successfully deleted.",
@@ -143,8 +146,12 @@ const Setting = () => {
         <div className="setting-side-bar">
           <span className="active">Account Information</span>
           <span onClick={handleDeleteAccount}>Delete Account</span>
-          <span onClick={handleDeleteHireDesignerProfile}>Delete Hire Designer Profile</span>
-          <span onClick={handleDeleteDesignerProfile}>Delete Designer Profile</span>
+          <span onClick={handleDeleteHireDesignerProfile}>
+            Delete Hire Designer Profile
+          </span>
+          <span onClick={handleDeleteDesignerProfile}>
+            Delete Designer Profile
+          </span>
         </div>
         <div className="setting-container">
           <div className="account-info">
@@ -156,7 +163,9 @@ const Setting = () => {
                     type="email"
                     name="email"
                     placeholder="Email"
-                    className={`input-u-email ${isEditingEmail ? "active" : ""}`}
+                    className={`input-u-email ${
+                      isEditingEmail ? "active" : ""
+                    }`}
                     value={email}
                     onChange={handleEmailChange}
                     disabled={!isEditingEmail}
@@ -167,10 +176,16 @@ const Setting = () => {
                     </button>
                   ) : (
                     <div className="settings-btn-container">
-                      <button className="edit-save-btn" onClick={handleSaveEmail}>
+                      <button
+                        className="edit-save-btn"
+                        onClick={handleSaveEmail}
+                      >
                         Save
                       </button>
-                      <button className="edit-cancel-btn" onClick={handleCancelEmailEdit}>
+                      <button
+                        className="edit-cancel-btn"
+                        onClick={handleCancelEmailEdit}
+                      >
                         Cancel
                       </button>
                     </div>
@@ -183,7 +198,9 @@ const Setting = () => {
                     type="password"
                     name="password"
                     placeholder="Password"
-                    className={`input-u-password ${isEditingPassword ? "active" : ""}`}
+                    className={`input-u-password ${
+                      isEditingPassword ? "active" : ""
+                    }`}
                     value={password}
                     onChange={handlePasswordChange}
                     disabled={!isEditingPassword}
@@ -194,10 +211,16 @@ const Setting = () => {
                     </button>
                   ) : (
                     <div className="settings-btn-container">
-                      <button className="edit-save-btn" onClick={handleSavePassword}>
+                      <button
+                        className="edit-save-btn"
+                        onClick={handleSavePassword}
+                      >
                         Save
                       </button>
-                      <button className="edit-cancel-btn" onClick={handleCancelPasswordEdit}>
+                      <button
+                        className="edit-cancel-btn"
+                        onClick={handleCancelPasswordEdit}
+                      >
                         Cancel
                       </button>
                     </div>

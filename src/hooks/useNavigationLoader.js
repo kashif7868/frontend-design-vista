@@ -10,8 +10,10 @@ const useNavigationLoader = () => {
       "/",
       "/design_vista",
       "/hiredesigner",
-      "/profile",
-      "/edit_profile", // Ensure this route is included
+      "/edit-designer-profile",
+      "/designer-profile",
+      "/edit-hire-designer-profile",
+      "/hire-designer-profile",
       "/login_signUp",
       "/setting",
       "/help",

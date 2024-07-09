@@ -7,49 +7,81 @@ import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../../context/authContext";
 import defaultUserImage from "../../assets/images/default-user.png";
 import "../../assets/css/pagesCss/editProfile.css";
-import {
-  appendHireDesignerProfileField,
-  getHireDesignerById,
-  createHireDesignerProfile,
-  updateHireDesignerProfile,
-} from "../../app/features/hireDesignerSlice";
+import { createHireDesigner, updateHireDesigner, getHireDesignerById } from '../../app/features/hireDesignerSlice';
 
 const EditHireDesignerProfile = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const hireDesignerProfile = useSelector((state) => state.hireDesigner.profile);
   const hireDesignerStatus = useSelector((state) => state.hireDesigner.status);
 
   const [profilePicture, setProfilePicture] = useState(defaultUserImage);
   const [profileExists, setProfileExists] = useState(false);
+  const [formData, setFormData] = useState({
+    user: user?.id || '',
+    basicInformation: {
+      firstName: '',
+      lastName: '',
+      companyName: '',
+      country: '',
+      city: '',
+      portfolioUrl: '',
+    },
+    onTheWeb: {
+      facebookUsername: '',
+      linkedinUsername: '',
+      githubUsername: '',
+    },
+    profilePicture: null,
+  });
 
   useEffect(() => {
-    if (user) {
-      dispatch(getHireDesignerById(user.id))
-        .unwrap()
-        .then((profile) => {
+    const fetchProfile = async () => {
+      if (user) {
+        try {
+          const profile = await dispatch(getHireDesignerById(user.id)).unwrap();
           if (profile) {
             setProfileExists(true);
-            setProfilePicture(profile.profilePicture || defaultUserImage);
-          }
-        })
-        .catch((error) => {
-          if (error.statusCode === 404) {
-            setProfileExists(false);
-            Swal.fire({
-              icon: "error",
-              title: "Profile Not Found",
-              text: "The hire designer profile was not found.",
+            setFormData({
+              user: profile.user || user.id,
+              basicInformation: {
+                firstName: profile.basicInformation.firstName || '',
+                lastName: profile.basicInformation.lastName || '',
+                companyName: profile.basicInformation.companyName || '',
+                country: profile.basicInformation.country || '',
+                city: profile.basicInformation.city || '',
+                portfolioUrl: profile.basicInformation.portfolioUrl || '',
+              },
+              onTheWeb: {
+                facebookUsername: profile.onTheWeb.facebookUsername || '',
+                linkedinUsername: profile.onTheWeb.linkedinUsername || '',
+                githubUsername: profile.onTheWeb.githubUsername || '',
+              },
+              profilePicture: profile.profilePicture || defaultUserImage,
+              id: profile.id || '',
             });
+            localStorage.setItem("hireDesignerProfile", JSON.stringify(profile));
+          } else {
+            setProfileExists(false);
           }
-        });
-    }
+        } catch (error) {
+          setProfileExists(false);
+        }
+      }
+    };
+
+    fetchProfile();
   }, [user, dispatch]);
 
-  const handleChange = (e) => {
+  const handleNestedChange = (e, category) => {
     const { name, value } = e.target;
-    dispatch(appendHireDesignerProfileField({ name, value }));
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [category]: {
+        ...prevFormData[category],
+        [name]: value,
+      },
+    }));
   };
 
   const handleProfilePictureChange = (e) => {
@@ -58,58 +90,61 @@ const EditHireDesignerProfile = () => {
       const reader = new FileReader();
       reader.onload = () => {
         setProfilePicture(reader.result);
-        dispatch(appendHireDesignerProfileField({ name: "profilePicture", value: file }));
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          profilePicture: file,
+        }));
       };
       reader.readAsDataURL(file);
     }
   };
 
-  const handleSave = async () => {
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = new FormData();
+    data.append('user', formData.user);
+
+    // Append nested fields individually
+    Object.keys(formData.basicInformation).forEach((key) => {
+      data.append(`basicInformation[${key}]`, formData.basicInformation[key]);
+    });
+    Object.keys(formData.onTheWeb).forEach((key) => {
+      data.append(`onTheWeb[${key}]`, formData.onTheWeb[key]);
+    });
+
+    if (formData.profilePicture) {
+      data.append('profilePicture', formData.profilePicture);
+    }
+
     try {
-      const profileData = { ...hireDesignerProfile, user: user.id };
-      await dispatch(createHireDesignerProfile(profileData)).unwrap();
-      setProfileExists(true);
-      navigate("/hire-designer-profile");
+      let response;
+      if (profileExists) {
+        response = await dispatch(updateHireDesigner({ id: formData.id, data })).unwrap();
+      } else {
+        response = await dispatch(createHireDesigner(data)).unwrap();
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          id: response.id, // Update form data with new profile ID
+        }));
+        setProfileExists(true);
+      }
+      localStorage.setItem("hireDesignerProfile", JSON.stringify(response));
+      navigate('/hire-designer-profile');
       Swal.fire({
         icon: "success",
-        title: "Profile Created",
-        text: "Your profile has been successfully created.",
+        title: profileExists ? "Profile Updated" : "Profile Created",
+        text: `Your profile has been successfully ${profileExists ? "updated" : "created"}.`,
       });
     } catch (error) {
       Swal.fire({
         icon: "error",
-        title: "Creation Error",
-        text: error.message || "Failed to create profile",
+        title: profileExists ? "Update Error" : "Creation Error",
+        text: error.message || `Failed to ${profileExists ? "update" : "create"} profile`,
       });
     }
   };
 
-  const handleUpdate = async () => {
-    try {
-      const profileData = { ...hireDesignerProfile, user: user.id };
-      await dispatch(updateHireDesignerProfile({ id: user.id, profileData })).unwrap();
-      navigate("/hire-designer-profile");
-      Swal.fire({
-        icon: "success",
-        title: "Profile Updated",
-        text: "Your profile has been successfully updated.",
-      });
-    } catch (error) {
-      Swal.fire({
-        icon: "error",
-        title: "Update Error",
-        text: error.message || "Failed to update profile",
-      });
-    }
-  };
-
-  if (!user) {
-    return <div>Loading...</div>;
-  }
-
-  const isLoading = hireDesignerStatus === "loading";
-
-  if (isLoading) {
+  if (!user || hireDesignerStatus === "loading") {
     return <div>Loading...</div>;
   }
 
@@ -152,21 +187,23 @@ const EditHireDesignerProfile = () => {
                     <div className="form-group">
                       <input
                         type="text"
-                        name="basicInformation.firstName"
-                        value={hireDesignerProfile.basicInformation.firstName || ""}
-                        onChange={handleChange}
+                        name="firstName"
+                        value={formData.basicInformation.firstName}
+                        onChange={(e) => handleNestedChange(e, 'basicInformation')}
                         placeholder=""
                         className="input-u-fname"
+                        required
                       />
                       <label className="input-u-label">First Name</label>
                     </div>
                     <div className="form-group">
                       <input
                         type="text"
-                        name="basicInformation.lastName"
-                        value={hireDesignerProfile.basicInformation.lastName || ""}
-                        onChange={handleChange}
+                        name="lastName"
+                        value={formData.basicInformation.lastName}
+                        onChange={(e) => handleNestedChange(e, 'basicInformation')}
                         placeholder=""
+                        required
                       />
                       <label className="input-u-label">Last Name</label>
                     </div>
@@ -174,9 +211,9 @@ const EditHireDesignerProfile = () => {
                   <div className="form-group">
                     <input
                       type="text"
-                      name="basicInformation.companyName"
-                      value={hireDesignerProfile.basicInformation.companyName || ""}
-                      onChange={handleChange}
+                      name="companyName"
+                      value={formData.basicInformation.companyName}
+                      onChange={(e) => handleNestedChange(e, 'basicInformation')}
                       placeholder=""
                       required
                     />
@@ -186,9 +223,9 @@ const EditHireDesignerProfile = () => {
                     <div className="form-group">
                       <input
                         type="text"
-                        name="basicInformation.country"
-                        value={hireDesignerProfile.basicInformation.country || ""}
-                        onChange={handleChange}
+                        name="country"
+                        value={formData.basicInformation.country}
+                        onChange={(e) => handleNestedChange(e, 'basicInformation')}
                         placeholder=""
                       />
                       <label className="input-u-label">Country</label>
@@ -196,9 +233,9 @@ const EditHireDesignerProfile = () => {
                     <div className="form-group">
                       <input
                         type="text"
-                        name="basicInformation.city"
-                        value={hireDesignerProfile.basicInformation.city || ""}
-                        onChange={handleChange}
+                        name="city"
+                        value={formData.basicInformation.city}
+                        onChange={(e) => handleNestedChange(e, 'basicInformation')}
                         placeholder=""
                       />
                       <label className="input-u-label">City</label>
@@ -207,9 +244,9 @@ const EditHireDesignerProfile = () => {
                   <div className="form-group">
                     <input
                       type="text"
-                      name="basicInformation.portfolioUrl"
-                      value={hireDesignerProfile.basicInformation.portfolioUrl || ""}
-                      onChange={handleChange}
+                      name="portfolioUrl"
+                      value={formData.basicInformation.portfolioUrl}
+                      onChange={(e) => handleNestedChange(e, 'basicInformation')}
                       placeholder=""
                     />
                     <label className="input-u-label">Portfolio URL</label>
@@ -225,11 +262,11 @@ const EditHireDesignerProfile = () => {
                         </div>
                         <input
                           type="text"
-                          name="onTheWeb.facebookUsername"
+                          name="facebookUsername"
                           placeholder="Enter username"
                           className="input-u-username"
-                          value={hireDesignerProfile.onTheWeb.facebookUsername || ""}
-                          onChange={handleChange}
+                          value={formData.onTheWeb.facebookUsername}
+                          onChange={(e) => handleNestedChange(e, 'onTheWeb')}
                         />
                       </div>
                       <div className="social-list">
@@ -238,11 +275,11 @@ const EditHireDesignerProfile = () => {
                         </div>
                         <input
                           type="text"
-                          name="onTheWeb.linkedinUsername"
+                          name="linkedinUsername"
                           placeholder="Enter username"
                           className="input-u-username"
-                          value={hireDesignerProfile.onTheWeb.linkedinUsername || ""}
-                          onChange={handleChange}
+                          value={formData.onTheWeb.linkedinUsername}
+                          onChange={(e) => handleNestedChange(e, 'onTheWeb')}
                         />
                       </div>
                       <div className="social-list">
@@ -251,11 +288,11 @@ const EditHireDesignerProfile = () => {
                         </div>
                         <input
                           type="text"
-                          name="onTheWeb.githubUsername"
+                          name="githubUsername"
                           placeholder="Enter username"
                           className="input-u-username"
-                          value={hireDesignerProfile.onTheWeb.githubUsername || ""}
-                          onChange={handleChange}
+                          value={formData.onTheWeb.githubUsername}
+                          onChange={(e) => handleNestedChange(e, 'onTheWeb')}
                         />
                       </div>
                     </div>
@@ -263,15 +300,9 @@ const EditHireDesignerProfile = () => {
                 </div>
               </div>
               <div className="save-changes-container">
-                {!profileExists ? (
-                  <button className="save-changes-btn" onClick={handleSave}>
-                    Create Profile
-                  </button>
-                ) : (
-                  <button className="save-changes-btn" onClick={handleUpdate}>
-                    Update Profile
-                  </button>
-                )}
+                <button className="save-changes-btn" onClick={handleSubmit}>
+                  {profileExists ? "Update Profile" : "Create Profile"}
+                </button>
               </div>
             </div>
           </div>

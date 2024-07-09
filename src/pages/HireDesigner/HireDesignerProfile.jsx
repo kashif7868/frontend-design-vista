@@ -21,26 +21,24 @@ const HireDesignerProfile = ({ coverImageId }) => {
   const [activeLink, setActiveLink] = useState("status");
   const { user, role } = useAuth();
   const dispatch = useDispatch();
-  const profile = useSelector((state) => state.hireDesigner.profile);
+  const profile = useSelector((state) => state.hireDesigner.designer);
   const status = useSelector((state) => state.hireDesigner.status);
-
   const bannerImage = useSelector((state) => state.coverBanner.bannerImage);
   const coverBannerStatus = useSelector((state) => state.coverBanner.status);
-  const currentCoverImageId = useSelector(
-    (state) => state.coverBanner.coverImageId
-  );
+  const currentCoverImageId = useSelector((state) => state.coverBanner.coverImageId);
 
   useEffect(() => {
     if (user && user.id && role === "hireDesigner") {
-      const storedProfile = localStorage.getItem("hireDesignerProfile");
-      if (storedProfile) {
-        dispatch({
-          type: "hireDesigner/getHireDesignerById/fulfilled",
-          payload: JSON.parse(storedProfile),
+      dispatch(getHireDesignerById(user.id))
+        .unwrap()
+        .then((profile) => {
+          localStorage.setItem("hireDesignerProfile", JSON.stringify(profile));
+        })
+        .catch((error) => {
+          if (error === 'Hire Designer not found') {
+            localStorage.removeItem("hireDesignerProfile");
+          }
         });
-      } else {
-        dispatch(getHireDesignerById(user.id));
-      }
     }
   }, [user, role, dispatch]);
 
@@ -71,7 +69,9 @@ const HireDesignerProfile = ({ coverImageId }) => {
     if (file && user && user.id) {
       dispatch(createCoverImage({ userId: user.id, imageFile: file }))
         .unwrap()
-        .then(() => {
+        .then((res) => {
+          localStorage.setItem("bannerImage", res.image);
+          localStorage.setItem("coverImageId", res.id);
           toast.success("Banner image uploaded successfully!");
         })
         .catch((error) => {
@@ -86,6 +86,8 @@ const HireDesignerProfile = ({ coverImageId }) => {
       dispatch(deleteCoverImage(currentCoverImageId))
         .unwrap()
         .then(() => {
+          localStorage.removeItem("bannerImage");
+          localStorage.removeItem("coverImageId");
           toast.success("Banner image removed successfully!");
         })
         .catch((error) => {
@@ -99,14 +101,10 @@ const HireDesignerProfile = ({ coverImageId }) => {
     const file = event.target.files[0];
     if (file && user && user.id) {
       if (currentCoverImageId) {
-        dispatch(
-          updateCoverImage({
-            coverImageId: currentCoverImageId,
-            imageFile: file,
-          })
-        )
+        dispatch(updateCoverImage({ coverImageId: currentCoverImageId, imageFile: file }))
           .unwrap()
-          .then(() => {
+          .then((res) => {
+            localStorage.setItem("bannerImage", res.image);
             toast.success("Banner image replaced successfully!");
           })
           .catch((error) => {
@@ -187,29 +185,32 @@ const HireDesignerProfile = ({ coverImageId }) => {
             <div className="user-info">
               <div className="profile-image-container">
                 <img
-                  src={profile.profilePicture || defaultUserImage}
+                  src={profile?.profilePicture || defaultUserImage}
                   alt="Profile"
                   className="profile-image"
                 />
               </div>
               <div className="profile-info">
                 <h1 className="profile-name">
-                  {profile.basicInformation?.firstName || user.firstName}{" "}
-                  {profile.basicInformation?.lastName || user.lastName}
+                  {profile?.basicInformation?.firstName || user.firstName}{" "}
+                  {profile?.basicInformation?.lastName || user.lastName}
                 </h1>
                 <p className="profile-location">
                   <MdLocationPin />
-                  {profile.basicInformation?.country || ""}{" "}
-                  {profile.basicInformation?.city || ""}
+                  {profile?.basicInformation?.country || ""}{" "}
+                  {profile?.basicInformation?.city || ""}
                 </p>
                 <div className="company-name">
                   <h6> Company Name</h6>
-                  <span>{profile.basicInformation?.companyName || ""}</span>
+                  <span>{profile?.basicInformation?.companyName || ""}</span>
                 </div>
               </div>
             </div>
             <div className="edit-profile-container">
-              <Link to="/edit-hire-designer-profile" className="edit-profile-btn">
+              <Link
+                to="/edit-hire-designer-profile"
+                className="edit-profile-btn"
+              >
                 <MdEdit />
                 Edit Your Profile
               </Link>
@@ -220,8 +221,8 @@ const HireDesignerProfile = ({ coverImageId }) => {
                   <h6 className="welcome-dg">
                     Hire{" "}
                     <span>
-                      {profile.basicInformation?.firstName || user.firstName}{" "}
-                      {profile.basicInformation?.lastName || user.lastName}
+                      {profile?.basicInformation?.firstName || user.firstName}{" "}
+                      {profile?.basicInformation?.lastName || user.lastName}
                     </span>
                   </h6>
                   <h4 className="dg-title"> Looking For Opportunities?</h4>
@@ -237,24 +238,25 @@ const HireDesignerProfile = ({ coverImageId }) => {
                     <div className="social-icon">
                       <FaFacebook />
                     </div>
-                    <span>{profile.onTheWeb?.facebookUsername || ""}</span>
+                    <span>{profile?.onTheWeb?.facebookUsername || ""}</span>
                   </div>
                   <div className="social-list">
                     <div className="social-icon">
                       <FaLinkedinIn />
                     </div>
-                    <span>{profile.onTheWeb?.linkedinUsername || ""}</span>
+                    <span>{profile?.onTheWeb?.linkedinUsername || ""}</span>
                   </div>
                   <div className="social-list">
                     <div className="social-icon">
                       <FaGithub />
                     </div>
-                    <span> {profile.onTheWeb?.githubUsername || ""}</span>
+                    <span> {profile?.onTheWeb?.githubUsername || ""}</span>
                   </div>
                 </div>
               </div>
             </div>
           </div>
+
           <p className="current-date">CURRENT DATE: {getCurrentDate()}</p>
         </div>
         <div className="right-side-container">

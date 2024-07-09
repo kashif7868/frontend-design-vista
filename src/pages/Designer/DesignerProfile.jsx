@@ -30,28 +30,13 @@ const DesignerProfile = ({ coverImageId }) => {
   );
 
   useEffect(() => {
-    const storedProfile = localStorage.getItem("designerProfile");
-    if (storedProfile) {
-      const parsedProfile = JSON.parse(storedProfile);
-      dispatch({
-        type: "designer/getDesignerById/fulfilled",
-        payload: parsedProfile,
-      });
-    } else if (user && user.id && role === "designer") {
+    if (user && user.id && role === "designer") {
       dispatch(getDesignerById(user.id));
     }
   }, [user, role, dispatch]);
 
   useEffect(() => {
-    const storedBannerImage = localStorage.getItem("bannerImage");
-    const storedCoverImageId = localStorage.getItem("coverImageId");
-
-    if (storedBannerImage && storedCoverImageId) {
-      dispatch({
-        type: "coverBanner/fetchCoverImageById/fulfilled",
-        payload: { image: storedBannerImage, id: storedCoverImageId },
-      });
-    } else if (user && user.id && role === "designer") {
+    if (user && user.id && role === "designer") {
       if (coverImageId) {
         dispatch(fetchCoverImageById(coverImageId));
       } else {

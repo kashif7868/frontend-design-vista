@@ -1,7 +1,9 @@
-import React, { createContext, useContext, useState, useEffect } from "react";
+import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
+import { useDispatch } from "react-redux";
+import { clearProfile } from "../app/features/designerSlice"; // Import the clearProfile action
 import defaultUserPicture from "../assets/images/default-user.png";
 
 const AuthContext = createContext();
@@ -10,11 +12,26 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
+  const dispatch = useDispatch(); // Initialize dispatch
 
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [accessToken, setAccessToken] = useState(localStorage.getItem("accessToken"));
   const [refreshToken, setRefreshToken] = useState(localStorage.getItem("refreshToken"));
   const [role, setRole] = useState(user?.role || null);
+
+  const clearTokens = useCallback(() => {
+    setAccessToken(null);
+    setRefreshToken(null);
+    setRole(null);
+    setUser(null);
+
+    localStorage.removeItem("user");
+    localStorage.removeItem("accessToken");
+    localStorage.removeItem("refreshToken");
+    localStorage.removeItem("designerProfile");
+    localStorage.removeItem("hireDesignerProfile");
+    dispatch(clearProfile()); // Dispatch action to clear designer profile
+  }, [dispatch]);
 
   useEffect(() => {
     const fetchUserData = async () => {
@@ -43,7 +60,7 @@ export const AuthProvider = ({ children }) => {
     if (!user && accessToken) {
       fetchUserData();
     }
-  }, [user, accessToken]);
+  }, [user, accessToken, clearTokens]);
 
   const saveTokens = (tokens) => {
     setAccessToken(tokens.access.token);
@@ -51,17 +68,6 @@ export const AuthProvider = ({ children }) => {
 
     localStorage.setItem("accessToken", tokens.access.token);
     localStorage.setItem("refreshToken", tokens.refresh.token);
-  };
-
-  const clearTokens = () => {
-    setAccessToken(null);
-    setRefreshToken(null);
-    setRole(null);
-    setUser(null);
-
-    localStorage.removeItem("user");
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
   };
 
   const signUp = async (userData) => {
@@ -75,6 +81,7 @@ export const AuthProvider = ({ children }) => {
       setRole(newUser.role);
 
       localStorage.setItem("user", JSON.stringify(newUser));
+      dispatch(clearProfile()); // Clear profile state for new user
 
       navigate("/");
 
@@ -110,6 +117,7 @@ export const AuthProvider = ({ children }) => {
       setRole(user.role);
 
       localStorage.setItem("user", JSON.stringify(user));
+      dispatch(clearProfile()); // Clear profile state for new user
 
       navigate("/");
 
@@ -131,7 +139,7 @@ export const AuthProvider = ({ children }) => {
     try {
       await axios.post(
         "http://localhost:3000/api/auth/logout",
-        { refreshToken: refreshToken || "" }, // Ensure refreshToken is a string
+        { refreshToken: refreshToken || "" },
         {
           headers: {
             Authorization: `Bearer ${refreshToken}`,
@@ -140,6 +148,7 @@ export const AuthProvider = ({ children }) => {
       );
 
       clearTokens();
+      dispatch(clearProfile()); // Clear profile state on logout
 
       Swal.fire({
         icon: "success",
@@ -183,6 +192,7 @@ export const AuthProvider = ({ children }) => {
       });
 
       clearTokens();
+      dispatch(clearProfile()); // Clear profile state on account deletion
 
       Swal.fire({
         icon: "success",

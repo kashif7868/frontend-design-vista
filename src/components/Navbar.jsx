@@ -194,6 +194,14 @@ const Navbar = () => {
     user?.role === 'designer' ? designerProfile : hireDesignerProfile;
   const userProfilePicture = profileData?.profilePicture || defaultUserPicture;
 
+  const showDesignerMessage = () => {
+    Swal.fire({
+      icon: 'info',
+      title: 'Designer Profile',
+      text: 'You have accessed the Designer Profile.',
+    });
+  };
+
   return (
     <header className='header-container'>
       <div className='container-left'>
@@ -357,21 +365,18 @@ const Navbar = () => {
                         </div>
                       </div>
                       <div className='user-link-ps'>
-                        {userRole === 'designer' ? (
-                          <li>
-                            <Link to='/designer-profile'>
-                              <FaUser className='user-icon' />
-                              Designer Profile
-                            </Link>
-                          </li>
-                        ) : (
-                          <li>
-                            <Link to='/hire-designer-profile'>
-                              <FaUser className='user-icon' />
-                              Hire Designer Profile
-                            </Link>
-                          </li>
-                        )}
+                        <li>
+                          <Link to='/designer-profile' onClick={showDesignerMessage}>
+                            <FaUser className='user-icon' />
+                            Designer Profile
+                          </Link>
+                        </li>
+                        <li>
+                          <Link to='/hire-designer-profile'>
+                            <FaUser className='user-icon' />
+                            Hire Designer Profile
+                          </Link>
+                        </li>
                         <li>
                           <Link to='/setting'>
                             <FaCog className='user-icon' />

@@ -14,6 +14,7 @@ import {
   createDesignerProfile,
   appendDesignerProfileField,
   getDesignerById,
+  updateDesignerProfile,
 } from "../../app/features/designerSlice";
 
 const EditDesignerProfile = () => {
@@ -22,7 +23,7 @@ const EditDesignerProfile = () => {
   const dispatch = useDispatch();
   const designerProfile = useSelector((state) => state.designer.profile);
   const designerStatus = useSelector((state) => state.designer.status);
-
+  const designerError = useSelector((state) => state.designer.error);
   const [profilePicture, setProfilePicture] = useState(defaultUserImage);
 
   useEffect(() => {
@@ -31,6 +32,14 @@ const EditDesignerProfile = () => {
       dispatch(getDesignerById(user.id));
     }
   }, [user, dispatch]);
+
+  useEffect(() => {
+    if (designerProfile.profilePicture) {
+      setProfilePicture(
+        `${process.env.REACT_APP_ROOT_PATH}${designerProfile.profilePicture}`
+      );
+    }
+  }, [designerProfile]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -51,11 +60,21 @@ const EditDesignerProfile = () => {
     }
   };
 
-  const handleSave = async () => {
+  const handleSubmit = async () => {
     try {
       const profileData = { ...designerProfile, user: user.id };
 
-      await dispatch(createDesignerProfile(profileData)).unwrap();
+      if (designerProfile && designerProfile.id) {
+        await dispatch(
+          updateDesignerProfile({
+            designerId: designerProfile.id,
+            profileData,
+          })
+        ).unwrap();
+      } else {
+        await dispatch(createDesignerProfile(profileData)).unwrap();
+      }
+
       navigate("/designer-profile");
 
       Swal.fire({
@@ -78,9 +97,18 @@ const EditDesignerProfile = () => {
 
   const formData = designerProfile;
   const isLoading = designerStatus === "loading";
+  const profileExists = designerProfile && designerProfile.id;
 
   if (isLoading) {
     return <div>Loading...</div>;
+  }
+
+  if (designerError && designerError.message === "Profile not found.") {
+    Swal.fire({
+      icon: "info",
+      title: "Profile Not Found",
+      text: "No existing profile found. You can create a new profile.",
+    });
   }
 
   return (
@@ -332,8 +360,8 @@ const EditDesignerProfile = () => {
                   </div>
                 </div>
                 <div className="save-changes-container">
-                  <button className="save-changes-btn" onClick={handleSave} disabled={isLoading}>
-                    Save Profile
+                  <button className="save-changes-btn" onClick={handleSubmit} disabled={isLoading}>
+                    {profileExists ? "Update Profile" : "Create Profile"}
                   </button>
                 </div>
               </div>

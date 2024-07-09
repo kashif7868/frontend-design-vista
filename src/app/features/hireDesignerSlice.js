@@ -1,129 +1,96 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-const initialState = {
-  profile: {
-    profilePicture: '',
-    user: '',
-    basicInformation: {
-      firstName: '',
-      lastName: '',
-      companyName: '',
-      country: '',
-      city: '',
-      portfolioUrl: ''
-    },
-    onTheWeb: {
-      facebookUsername: '',
-      linkedinUsername: '',
-      githubUsername: ''
-    }
-  },
-  status: 'idle',
-  error: null
-};
-
-const createFormData = (profile) => {
-  const formData = new FormData();
-  formData.append("profilePicture", profile.profilePicture);
-  formData.append("user", profile.user);
-  formData.append("basicInformation[firstName]", profile.basicInformation.firstName);
-  formData.append("basicInformation[lastName]", profile.basicInformation.lastName);
-  formData.append("basicInformation[companyName]", profile.basicInformation.companyName);
-  formData.append("basicInformation[country]", profile.basicInformation.country);
-  formData.append("basicInformation[city]", profile.basicInformation.city);
-  formData.append("basicInformation[portfolioUrl]", profile.basicInformation.portfolioUrl);
-  formData.append("onTheWeb[facebookUsername]", profile.onTheWeb.facebookUsername);
-  formData.append("onTheWeb[linkedinUsername]", profile.onTheWeb.linkedinUsername);
-  formData.append("onTheWeb[githubUsername]", profile.onTheWeb.githubUsername);
-  return formData;
-};
-
-export const createHireDesignerProfile = createAsyncThunk(
-  'hireDesigner/createHireDesignerProfile',
-  async (profileData, { rejectWithValue }) => {
+// Thunks for async actions
+export const createHireDesigner = createAsyncThunk(
+  'hireDesigner/createHireDesigner',
+  async (data, { rejectWithValue }) => {
     try {
-      const formData = createFormData(profileData);
-      const response = await axios.post('http://localhost:3000/api/hire/', formData, {
+      const response = await axios.post('http://localhost:3000/api/hire/', data, {
         headers: {
-          'Content-Type': 'multipart/form-data'
-        }
+          'Content-Type': 'multipart/form-data',
+        },
       });
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || 'An error occurred');
+    }
+  }
+);
+
+export const updateHireDesigner = createAsyncThunk(
+  'hireDesigner/updateHireDesigner',
+  async ({ hireDesignerId, data }, { rejectWithValue }) => {
+    try {
+      const response = await axios.patch(`http://localhost:3000/api/hire/${hireDesignerId}`, data, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data || 'An error occurred');
     }
   }
 );
 
 export const getHireDesignerById = createAsyncThunk(
   'hireDesigner/getHireDesignerById',
-  async (id, { rejectWithValue }) => {
+  async (hireDesignerId, { rejectWithValue }) => {
     try {
-      const response = await axios.get(`http://localhost:3000/api/hire/${id}`);
+      const response = await axios.get(`http://localhost:3000/api/hire/${hireDesignerId}`);
       return response.data;
     } catch (error) {
-      return rejectWithValue(error.response.data);
+      if (error.response?.status === 404) {
+        return rejectWithValue('Hire Designer not found');
+      }
+      return rejectWithValue(error.response?.data || 'An error occurred');
     }
   }
 );
 
-export const updateHireDesignerProfile = createAsyncThunk(
-  'hireDesigner/updateHireDesignerProfile',
-  async ({ id, profileData }, { rejectWithValue }) => {
+export const deleteHireDesigner = createAsyncThunk(
+  'hireDesigner/deleteHireDesigner',
+  async (hireDesignerId, { rejectWithValue }) => {
     try {
-      const formData = createFormData(profileData);
-      const response = await axios.patch(`http://localhost:3000/api/hire/${id}`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data'
-        }
-      });
-      return response.data;
+      await axios.delete(`http://localhost:3000/api/hire/${hireDesignerId}`);
+      return hireDesignerId; // Return the ID
     } catch (error) {
-      return rejectWithValue(error.response.data);
-    }
-  }
-);
-
-export const deleteHireDesignerProfile = createAsyncThunk(
-  'hireDesigner/deleteHireDesignerProfile',
-  async (id, { rejectWithValue }) => {
-    try {
-      await axios.delete(`http://localhost:3000/api/hire/${id}`);
-      return id;
-    } catch (error) {
-      return rejectWithValue(error.response.data);
+      return rejectWithValue(error.response?.data || 'An error occurred');
     }
   }
 );
 
 const hireDesignerSlice = createSlice({
   name: 'hireDesigner',
-  initialState,
-  reducers: {
-    appendHireDesignerProfileField: (state, action) => {
-      const { name, value } = action.payload;
-      const keys = name.split('.');
-      keys.reduce((acc, key, idx) => {
-        if (idx === keys.length - 1) {
-          acc[key] = Array.isArray(acc[key]) ? [...acc[key], value] : value;
-        } else {
-          acc[key] = acc[key] || {};
-        }
-        return acc[key];
-      }, state.profile);
-    }
+  initialState: {
+    designer: null,
+    designers: [],
+    status: 'idle',
+    error: null,
   },
+  reducers: {},
   extraReducers: (builder) => {
     builder
-      .addCase(createHireDesignerProfile.pending, (state) => {
+      .addCase(createHireDesigner.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(createHireDesignerProfile.fulfilled, (state, action) => {
+      .addCase(createHireDesigner.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.profile = action.payload;
+        state.designer = action.payload;
       })
-      .addCase(createHireDesignerProfile.rejected, (state, action) => {
+      .addCase(createHireDesigner.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+      .addCase(updateHireDesigner.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(updateHireDesigner.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        state.designer = action.payload;
+      })
+      .addCase(updateHireDesigner.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       })
@@ -132,37 +99,24 @@ const hireDesignerSlice = createSlice({
       })
       .addCase(getHireDesignerById.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.profile = action.payload;
+        state.designer = action.payload;
       })
       .addCase(getHireDesignerById.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       })
-      .addCase(updateHireDesignerProfile.pending, (state) => {
+      .addCase(deleteHireDesigner.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(updateHireDesignerProfile.fulfilled, (state, action) => {
+      .addCase(deleteHireDesigner.fulfilled, (state, action) => {
         state.status = 'succeeded';
-        state.profile = action.payload;
+        state.designer = null;
       })
-      .addCase(updateHireDesignerProfile.rejected, (state, action) => {
-        state.status = 'failed';
-        state.error = action.payload;
-      })
-      .addCase(deleteHireDesignerProfile.pending, (state) => {
-        state.status = 'loading';
-      })
-      .addCase(deleteHireDesignerProfile.fulfilled, (state, action) => {
-        state.status = 'succeeded';
-        state.profile = initialState.profile;
-      })
-      .addCase(deleteHireDesignerProfile.rejected, (state, action) => {
+      .addCase(deleteHireDesigner.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.payload;
       });
-  }
+  },
 });
-
-export const { appendHireDesignerProfileField } = hireDesignerSlice.actions;
 
 export default hireDesignerSlice.reducer;

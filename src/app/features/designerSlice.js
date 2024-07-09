@@ -141,6 +141,20 @@ export const updateDesignerProfile = createAsyncThunk(
   }
 );
 
+export const deleteDesignerProfile = createAsyncThunk(
+  "designer/deleteDesignerProfile",
+  async (designerId, { rejectWithValue }) => {
+    try {
+      const response = await axios.delete(
+        `http://localhost:3000/api/designers/${designerId}`
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const designerSlice = createSlice({
   name: "designer",
   initialState,
@@ -157,6 +171,11 @@ const designerSlice = createSlice({
         return acc[key];
       }, state.profile);
     },
+    clearProfile: (state) => {
+      state.profile = initialState.profile;
+      state.status = "idle";
+      state.error = null;
+    },
   },
   extraReducers: (builder) => {
     builder
@@ -166,7 +185,6 @@ const designerSlice = createSlice({
       .addCase(createDesignerProfile.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.profile = action.payload;
-        localStorage.setItem("designerProfile", JSON.stringify(action.payload));
       })
       .addCase(createDesignerProfile.rejected, (state, action) => {
         state.status = "failed";
@@ -178,7 +196,6 @@ const designerSlice = createSlice({
       .addCase(getDesignerById.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.profile = action.payload;
-        localStorage.setItem("designerProfile", JSON.stringify(action.payload));
       })
       .addCase(getDesignerById.rejected, (state, action) => {
         state.status = "failed";
@@ -190,15 +207,25 @@ const designerSlice = createSlice({
       .addCase(updateDesignerProfile.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.profile = action.payload;
-        localStorage.setItem("designerProfile", JSON.stringify(action.payload));
       })
       .addCase(updateDesignerProfile.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(deleteDesignerProfile.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(deleteDesignerProfile.fulfilled, (state) => {
+        state.status = "succeeded";
+        state.profile = initialState.profile;
+      })
+      .addCase(deleteDesignerProfile.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });
   },
 });
 
-export const { appendDesignerProfileField } = designerSlice.actions;
+export const { appendDesignerProfileField, clearProfile } = designerSlice.actions;
 
 export default designerSlice.reducer;
