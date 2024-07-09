@@ -22,7 +22,6 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { getDesignerById } from '../app/features/designerSlice';
 import { getHireDesignerById } from '../app/features/hireDesignerSlice';
-import { useUserRole } from '../context/UserRoleContext';
 
 const Navbar = () => {
   const [openMenu, setOpenMenu] = useState(null);
@@ -34,6 +33,7 @@ const Navbar = () => {
   const [messages, setMessages] = useState([]);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [selectedMessage, setSelectedMessage] = useState(null);
+  const [activeProfile, setActiveProfile] = useState('designer'); // Add state for active profile
 
   const userMenuRef = useRef(null);
   const messageMenuRef = useRef(null);
@@ -45,7 +45,6 @@ const Navbar = () => {
 
   const designerProfile = useSelector((state) => state.designer?.profile);
   const hireDesignerProfile = useSelector((state) => state.hireDesigner?.profile);
-  const { userRole } = useUserRole();
 
   useEffect(() => {
     if (user) {
@@ -191,15 +190,13 @@ const Navbar = () => {
   };
 
   const profileData =
-    user?.role === 'designer' ? designerProfile : hireDesignerProfile;
+    activeProfile === 'designer' ? designerProfile : hireDesignerProfile; // Use activeProfile
   const userProfilePicture = profileData?.profilePicture || defaultUserPicture;
 
-  const showDesignerMessage = () => {
-    Swal.fire({
-      icon: 'info',
-      title: 'Designer Profile',
-      text: 'You have accessed the Designer Profile.',
-    });
+
+  const handleProfileClick = (profile) => {
+    setActiveProfile(profile); // Set active profile
+    setOpenMenu(null); // Close any open menu
   };
 
   return (
@@ -279,7 +276,7 @@ const Navbar = () => {
                 )}
               </button>
             </li>
-            {userRole === 'designer' && (
+            {activeProfile === 'designer' && ( // Display message icon for designer profile
               <li className='nav-list'>
                 <button
                   aria-label='Message'
@@ -366,13 +363,19 @@ const Navbar = () => {
                       </div>
                       <div className='user-link-ps'>
                         <li>
-                          <Link to='/designer-profile' onClick={showDesignerMessage}>
+                          <Link
+                            to='/designer-profile'
+                            onClick={() => handleProfileClick('designer')}
+                          >
                             <FaUser className='user-icon' />
                             Designer Profile
                           </Link>
                         </li>
                         <li>
-                          <Link to='/hire-designer-profile'>
+                          <Link
+                            to='/hire-designer-profile'
+                            onClick={() => handleProfileClick('hireDesigner')}
+                          >
                             <FaUser className='user-icon' />
                             Hire Designer Profile
                           </Link>
