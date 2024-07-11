@@ -134,7 +134,8 @@ const Setting = () => {
 
   return (
     <>
-      <div className="home-page-back-container">
+     <div className="setting-main-container">
+     <div className="home-page-back-container">
         <div className="setting-banner">
           <Link to="/">
             <IoCaretBack />
@@ -231,6 +232,7 @@ const Setting = () => {
           </div>
         </div>
       </div>
+     </div>
     </>
   );
 };

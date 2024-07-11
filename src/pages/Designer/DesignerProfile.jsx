@@ -200,16 +200,14 @@ const DesignerProfile = ({ coverImageId }) => {
             </div>
             <div className="dg-info-sub-container">
               <div className="dg-info">
-                <h6 className="welcome-dg">
-                  Welcome to Designer :{" "}
-                  <span>
-                    {profile.basicInformation?.firstName || user.firstName}{" "}
-                    {profile.basicInformation?.lastName || user.lastName}
-                  </span>
+              <h6 className="welcome-dg">
+                  <span>Welcome to Your Design Haven!</span>
                 </h6>
                 <span className="dg-description">
-                  Lorem, ipsum dolor sit amet consectetur adipisicing elit.
-                  Excepturi, autem.
+                  Design Vista is your ultimate platform to start a creative
+                  journey, where your design dreams take flight and innovation
+                  thrives. Join a community that nurtures your talent and
+                  propels your creativity to new heights.
                 </span>
               </div>
             </div>

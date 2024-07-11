@@ -41,9 +41,12 @@ const EditDesignerProfile = () => {
     }
   }, [designerProfile]);
 
-  const handleChange = (e) => {
+  const handleNestedChange = (e, category) => {
     const { name, value } = e.target;
-    dispatch(appendDesignerProfileField({ name, value }));
+    dispatch(appendDesignerProfileField({
+      name: `${category}.${name}`,
+      value,
+    }));
   };
 
   const handleProfilePictureChange = (e) => {
@@ -52,6 +55,9 @@ const EditDesignerProfile = () => {
       const reader = new FileReader();
       reader.onload = () => {
         setProfilePicture(reader.result);
+        dispatch(
+          appendDesignerProfileField({ name: "profilePicturePreview", value: reader.result })
+        );
         dispatch(
           appendDesignerProfileField({ name: "profilePicture", value: file })
         );
@@ -130,6 +136,7 @@ const EditDesignerProfile = () => {
                     accept=".jpg,.jpeg,.png"
                     className="file-input"
                     onChange={handleProfilePictureChange}
+                    style={{ display: "none" }}
                   />
                   <span
                     className="upload-icon"
@@ -152,9 +159,9 @@ const EditDesignerProfile = () => {
                     <div className="form-group">
                       <input
                         type="text"
-                        name="basicInformation.firstName"
+                        name="firstName"
                         value={formData.basicInformation?.firstName || ""}
-                        onChange={handleChange}
+                        onChange={(e) => handleNestedChange(e, 'basicInformation')}
                         placeholder=""
                         className="input-u-fname"
                       />
@@ -163,9 +170,9 @@ const EditDesignerProfile = () => {
                     <div className="form-group">
                       <input
                         type="text"
-                        name="basicInformation.lastName"
+                        name="lastName"
                         value={formData.basicInformation?.lastName || ""}
-                        onChange={handleChange}
+                        onChange={(e) => handleNestedChange(e, 'basicInformation')}
                         placeholder=""
                       />
                       <label className="input-u-label">Last Name</label>
@@ -174,9 +181,9 @@ const EditDesignerProfile = () => {
                   <div className="form-group">
                     <input
                       type="text"
-                      name="basicInformation.categoryName"
+                      name="categoryName"
                       value={formData.basicInformation?.categoryName || ""}
-                      onChange={handleChange}
+                      onChange={(e) => handleNestedChange(e, 'basicInformation')}
                       placeholder=""
                       required
                     />
@@ -186,9 +193,9 @@ const EditDesignerProfile = () => {
                     <div className="form-group">
                       <input
                         type="text"
-                        name="basicInformation.country"
+                        name="country"
                         value={formData.basicInformation?.country || ""}
-                        onChange={handleChange}
+                        onChange={(e) => handleNestedChange(e, 'basicInformation')}
                         placeholder=""
                       />
                       <label className="input-u-label">Country</label>
@@ -196,9 +203,9 @@ const EditDesignerProfile = () => {
                     <div className="form-group">
                       <input
                         type="text"
-                        name="basicInformation.city"
+                        name="city"
                         value={formData.basicInformation?.city || ""}
-                        onChange={handleChange}
+                        onChange={(e) => handleNestedChange(e, 'basicInformation')}
                         placeholder=""
                       />
                       <label className="input-u-label">City</label>
@@ -207,9 +214,9 @@ const EditDesignerProfile = () => {
                   <div className="form-group">
                     <input
                       type="text"
-                      name="basicInformation.portfolioUrl"
+                      name="portfolioUrl"
                       value={formData.basicInformation?.portfolioUrl || ""}
-                      onChange={handleChange}
+                      onChange={(e) => handleNestedChange(e, 'basicInformation')}
                       placeholder=""
                     />
                     <label className="input-u-label">Portfolio URL</label>
@@ -232,11 +239,11 @@ const EditDesignerProfile = () => {
                         </div>
                         <input
                           type="text"
-                          name="onTheWeb.facebookUsername"
+                          name="facebookUsername"
                           placeholder="Enter username"
                           className="input-u-username"
                           value={formData.onTheWeb?.facebookUsername || ""}
-                          onChange={handleChange}
+                          onChange={(e) => handleNestedChange(e, 'onTheWeb')}
                         />
                       </div>
                       <div className="social-list">
@@ -245,11 +252,11 @@ const EditDesignerProfile = () => {
                         </div>
                         <input
                           type="text"
-                          name="onTheWeb.linkedinUsername"
+                          name="linkedinUsername"
                           placeholder="Enter username"
                           className="input-u-username"
                           value={formData.onTheWeb?.linkedinUsername || ""}
-                          onChange={handleChange}
+                          onChange={(e) => handleNestedChange(e, 'onTheWeb')}
                         />
                       </div>
                       <div className="social-list">
@@ -258,11 +265,11 @@ const EditDesignerProfile = () => {
                         </div>
                         <input
                           type="text"
-                          name="onTheWeb.githubUsername"
+                          name="githubUsername"
                           placeholder="Enter username"
                           className="input-u-username"
                           value={formData.onTheWeb?.githubUsername || ""}
-                          onChange={handleChange}
+                          onChange={(e) => handleNestedChange(e, 'onTheWeb')}
                         />
                       </div>
                     </div>
@@ -275,9 +282,9 @@ const EditDesignerProfile = () => {
                       <div className="form-group">
                         <input
                           type="text"
-                          name="aboutMe.sectionTitle"
+                          name="sectionTitle"
                           value={formData.aboutMe?.sectionTitle || ""}
-                          onChange={handleChange}
+                          onChange={(e) => handleNestedChange(e, 'aboutMe')}
                           placeholder=""
                           className="input-u-section-title"
                         />
@@ -285,9 +292,9 @@ const EditDesignerProfile = () => {
                       </div>
                       <div className="form-group">
                         <textarea
-                          name="aboutMe.description"
+                          name="description"
                           value={formData.aboutMe?.description || ""}
-                          onChange={handleChange}
+                          onChange={(e) => handleNestedChange(e, 'aboutMe')}
                           placeholder=""
                           className="input-u-description"
                         ></textarea>
@@ -304,9 +311,9 @@ const EditDesignerProfile = () => {
                     <div className="form-group">
                       <input
                         type="text"
-                        name="workExperience.companyName"
+                        name="companyName"
                         value={formData.workExperience?.companyName || ""}
-                        onChange={handleChange}
+                        onChange={(e) => handleNestedChange(e, 'workExperience')}
                         placeholder=""
                         className="input-u-company-name"
                       />
@@ -315,9 +322,9 @@ const EditDesignerProfile = () => {
                     <div className="form-group">
                       <input
                         type="text"
-                        name="workExperience.position"
+                        name="position"
                         value={formData.workExperience?.position || ""}
-                        onChange={handleChange}
+                        onChange={(e) => handleNestedChange(e, 'workExperience')}
                         placeholder=""
                         className="input-u-position"
                       />
@@ -327,9 +334,9 @@ const EditDesignerProfile = () => {
                       <div className="form-group">
                         <input
                           type="date"
-                          name="workExperience.startingFrom"
+                          name="startingFrom"
                           value={formData.workExperience?.startingFrom || ""}
-                          onChange={handleChange}
+                          onChange={(e) => handleNestedChange(e, 'workExperience')}
                           placeholder=""
                           className="input-u-start-date"
                         />
@@ -338,9 +345,9 @@ const EditDesignerProfile = () => {
                       <div className="form-group">
                         <input
                           type="date"
-                          name="workExperience.endingIn"
+                          name="endingIn"
                           value={formData.workExperience?.endingIn || ""}
-                          onChange={handleChange}
+                          onChange={(e) => handleNestedChange(e, 'workExperience')}
                           placeholder=""
                           className="input-u-end-date"
                         />
@@ -349,9 +356,9 @@ const EditDesignerProfile = () => {
                     </div>
                     <div className="form-group">
                       <textarea
-                        name="workExperience.details"
+                        name="details"
                         value={formData.workExperience?.details || ""}
-                        onChange={handleChange}
+                        onChange={(e) => handleNestedChange(e, 'workExperience')}
                         placeholder=""
                         className="input-u-details"
                       ></textarea>

@@ -1,7 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
-// Thunks for async actions
 export const createHireDesigner = createAsyncThunk(
   'hireDesigner/createHireDesigner',
   async (data, { rejectWithValue }) => {
@@ -17,6 +16,8 @@ export const createHireDesigner = createAsyncThunk(
     }
   }
 );
+
+
 
 export const updateHireDesigner = createAsyncThunk(
   'hireDesigner/updateHireDesigner',
@@ -60,16 +61,33 @@ export const deleteHireDesigner = createAsyncThunk(
     }
   }
 );
-
 const hireDesignerSlice = createSlice({
   name: 'hireDesigner',
   initialState: {
-    designer: null,
+    designer: {
+      basicInformation: {},
+      onTheWeb: {}
+    },
     designers: [],
     status: 'idle',
     error: null,
   },
-  reducers: {},
+  reducers: {
+    appendHireDesignerProfileField: (state, action) => {
+      const { name, value } = action.payload;
+      if (state.designer) {
+        if (name.includes('basicInformation')) {
+          const key = name.split('.')[1];
+          state.designer.basicInformation[key] = value;
+        } else if (name.includes('onTheWeb')) {
+          const key = name.split('.')[1];
+          state.designer.onTheWeb[key] = value;
+        } else {
+          state.designer[name] = value;
+        }
+      }
+    },
+  },
   extraReducers: (builder) => {
     builder
       .addCase(createHireDesigner.pending, (state) => {
@@ -119,4 +137,6 @@ const hireDesignerSlice = createSlice({
   },
 });
 
+
+export const { appendHireDesignerProfileField } = hireDesignerSlice.actions;
 export default hireDesignerSlice.reducer;

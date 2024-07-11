@@ -11,10 +11,9 @@
   padding: 20px;
   border-radius: 10px;
 }
-
 .work-list {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: 20px;
   margin-top: 20px;
   padding: 0 10px;
@@ -41,12 +40,10 @@
 
 .work-image {
   width: 100%;
-  height: auto;
-  max-height: 245px;
+  height: 245px;
   object-fit: cover;
   transition: transform 0.3s ease, opacity 0.3s ease;
 }
-
 /* Error message */
 .message-required {
   color: red;
@@ -61,11 +58,10 @@
   background: #0055ff3b;
   border: none;
   cursor: pointer;
-  padding: 10px;
+  padding: 10px 10px;
   border-radius: 50%;
   transition: all 0.3s ease;
 }
-
 .remove-image-btn:hover {
   transform: scale(0.9);
   background-color: #ffd9003d;
@@ -74,7 +70,6 @@
 .remove-image-btn .remove-icon {
   font-size: 30px;
 }
-
 .work-item:hover .work-image {
   transform: scale(1.1);
   opacity: 0.7;
@@ -131,8 +126,7 @@
   color: #007bff;
   transition: all 0.3s ease;
 }
-
-.like_thumb:hover {
+.like_thumb :hover {
   color: #ffa500;
   cursor: pointer;
 }
@@ -159,13 +153,11 @@
 .work-setting-drop-down-manu {
   cursor: pointer;
 }
-
 .work-setting-drop-down-manu svg {
   color: #ffa500;
   font-size: 24px !important;
   transition: all 0.5s ease-in-out;
 }
-
 .work-setting-drop-down-manu svg:hover {
   color: #0056b3;
   transform: scale(0.98);
@@ -203,6 +195,7 @@
   color: #007bff;
 }
 
+/* Optional: To improve accessibility and user experience */
 .dropdown-content button:focus {
   outline: none;
   background-color: #f1f1f1;

@@ -2,38 +2,50 @@ import React, { useState, useEffect } from "react";
 import { IoCaretBack } from "react-icons/io5";
 import { Link, useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
-import { FaCloudUploadAlt, FaFacebook, FaLinkedinIn, FaGithub } from "react-icons/fa";
+import {
+  FaCloudUploadAlt,
+  FaFacebook,
+  FaLinkedinIn,
+  FaGithub,
+} from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
 import { useAuth } from "../../context/authContext";
 import defaultUserImage from "../../assets/images/default-user.png";
 import "../../assets/css/pagesCss/editProfile.css";
-import { createHireDesigner, updateHireDesigner, getHireDesignerById } from '../../app/features/hireDesignerSlice';
+import {
+  createHireDesigner,
+  updateHireDesigner,
+  getHireDesignerById,
+  appendHireDesignerProfileField,
+} from "../../app/features/hireDesignerSlice";
 
 const EditHireDesignerProfile = () => {
   const { user } = useAuth();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const hireDesignerStatus = useSelector((state) => state.hireDesigner.status);
-
-  const [profilePicture, setProfilePicture] = useState(defaultUserImage);
   const [profileExists, setProfileExists] = useState(false);
-  const [formData, setFormData] = useState({
-    user: user?.id || '',
+
+  const initialFormData = {
+    user: user?.id || "",
     basicInformation: {
-      firstName: '',
-      lastName: '',
-      companyName: '',
-      country: '',
-      city: '',
-      portfolioUrl: '',
+      firstName: "",
+      lastName: "",
+      companyName: "",
+      country: "",
+      city: "",
+      portfolioUrl: "",
     },
     onTheWeb: {
-      facebookUsername: '',
-      linkedinUsername: '',
-      githubUsername: '',
+      facebookUsername: "",
+      linkedinUsername: "",
+      githubUsername: "",
     },
     profilePicture: null,
-  });
+  };
+
+  const [formData, setFormData] = useState(initialFormData);
+  const [profilePicture, setProfilePicture] = useState(defaultUserImage);
 
   useEffect(() => {
     const fetchProfile = async () => {
@@ -45,17 +57,17 @@ const EditHireDesignerProfile = () => {
             setFormData({
               user: profile.user || user.id,
               basicInformation: {
-                firstName: profile.basicInformation.firstName || '',
-                lastName: profile.basicInformation.lastName || '',
-                companyName: profile.basicInformation.companyName || '',
-                country: profile.basicInformation.country || '',
-                city: profile.basicInformation.city || '',
-                portfolioUrl: profile.basicInformation.portfolioUrl || '',
+                firstName: profile.basicInformation?.firstName || '',
+                lastName: profile.basicInformation?.lastName || '',
+                companyName: profile.basicInformation?.companyName || '',
+                country: profile.basicInformation?.country || '',
+                city: profile.basicInformation?.city || '',
+                portfolioUrl: profile.basicInformation?.portfolioUrl || '',
               },
               onTheWeb: {
-                facebookUsername: profile.onTheWeb.facebookUsername || '',
-                linkedinUsername: profile.onTheWeb.linkedinUsername || '',
-                githubUsername: profile.onTheWeb.githubUsername || '',
+                facebookUsername: profile.onTheWeb?.facebookUsername || '',
+                linkedinUsername: profile.onTheWeb?.linkedinUsername || '',
+                githubUsername: profile.onTheWeb?.githubUsername || '',
               },
               profilePicture: profile.profilePicture || defaultUserImage,
               id: profile.id || '',
@@ -82,6 +94,12 @@ const EditHireDesignerProfile = () => {
         [name]: value,
       },
     }));
+
+    // Dispatch an action to update the store if necessary
+    dispatch(appendHireDesignerProfileField({
+      name: `${category}.${name}`,
+      value: value
+    }));
   };
 
   const handleProfilePictureChange = (e) => {
@@ -94,6 +112,14 @@ const EditHireDesignerProfile = () => {
           ...prevFormData,
           profilePicture: file,
         }));
+        dispatch(appendHireDesignerProfileField({
+          name: "profilePicturePreview",
+          value: reader.result,
+        }));
+        dispatch(appendHireDesignerProfileField({
+          name: "profilePicture",
+          value: file,
+        }));
       };
       reader.readAsDataURL(file);
     }
@@ -102,7 +128,7 @@ const EditHireDesignerProfile = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const data = new FormData();
-    data.append('user', formData.user);
+    data.append("user", formData.user);
 
     // Append nested fields individually
     Object.keys(formData.basicInformation).forEach((key) => {
@@ -112,14 +138,17 @@ const EditHireDesignerProfile = () => {
       data.append(`onTheWeb[${key}]`, formData.onTheWeb[key]);
     });
 
+    // Append profilePicture to form data
     if (formData.profilePicture) {
-      data.append('profilePicture', formData.profilePicture);
+      data.append("profilePicture", formData.profilePicture);
     }
 
     try {
       let response;
       if (profileExists) {
-        response = await dispatch(updateHireDesigner({ id: formData.id, data })).unwrap();
+        response = await dispatch(
+          updateHireDesigner({ hireDesignerId: formData.id, data })
+        ).unwrap();
       } else {
         response = await dispatch(createHireDesigner(data)).unwrap();
         setFormData((prevFormData) => ({
@@ -129,17 +158,21 @@ const EditHireDesignerProfile = () => {
         setProfileExists(true);
       }
       localStorage.setItem("hireDesignerProfile", JSON.stringify(response));
-      navigate('/hire-designer-profile');
+      navigate("/hire-designer-profile");
       Swal.fire({
         icon: "success",
         title: profileExists ? "Profile Updated" : "Profile Created",
-        text: `Your profile has been successfully ${profileExists ? "updated" : "created"}.`,
+        text: `Your profile has been successfully ${
+          profileExists ? "updated" : "created"
+        }.`,
       });
     } catch (error) {
       Swal.fire({
         icon: "error",
         title: profileExists ? "Update Error" : "Creation Error",
-        text: error.message || `Failed to ${profileExists ? "update" : "create"} profile`,
+        text:
+          error.message ||
+          `Failed to ${profileExists ? "update" : "create"} profile`,
       });
     }
   };
@@ -170,7 +203,9 @@ const EditHireDesignerProfile = () => {
                   />
                   <span
                     className="upload-icon"
-                    onClick={() => document.querySelector(".file-input").click()}
+                    onClick={() =>
+                      document.querySelector(".file-input").click()
+                    }
                   >
                     <FaCloudUploadAlt /> Replace
                   </span>
@@ -189,7 +224,9 @@ const EditHireDesignerProfile = () => {
                         type="text"
                         name="firstName"
                         value={formData.basicInformation.firstName}
-                        onChange={(e) => handleNestedChange(e, 'basicInformation')}
+                        onChange={(e) =>
+                          handleNestedChange(e, "basicInformation")
+                        }
                         placeholder=""
                         className="input-u-fname"
                         required
@@ -201,7 +238,9 @@ const EditHireDesignerProfile = () => {
                         type="text"
                         name="lastName"
                         value={formData.basicInformation.lastName}
-                        onChange={(e) => handleNestedChange(e, 'basicInformation')}
+                        onChange={(e) =>
+                          handleNestedChange(e, "basicInformation")
+                        }
                         placeholder=""
                         required
                       />
@@ -213,7 +252,9 @@ const EditHireDesignerProfile = () => {
                       type="text"
                       name="companyName"
                       value={formData.basicInformation.companyName}
-                      onChange={(e) => handleNestedChange(e, 'basicInformation')}
+                      onChange={(e) =>
+                        handleNestedChange(e, "basicInformation")
+                      }
                       placeholder=""
                       required
                     />
@@ -225,7 +266,9 @@ const EditHireDesignerProfile = () => {
                         type="text"
                         name="country"
                         value={formData.basicInformation.country}
-                        onChange={(e) => handleNestedChange(e, 'basicInformation')}
+                        onChange={(e) =>
+                          handleNestedChange(e, "basicInformation")
+                        }
                         placeholder=""
                       />
                       <label className="input-u-label">Country</label>
@@ -235,7 +278,9 @@ const EditHireDesignerProfile = () => {
                         type="text"
                         name="city"
                         value={formData.basicInformation.city}
-                        onChange={(e) => handleNestedChange(e, 'basicInformation')}
+                        onChange={(e) =>
+                          handleNestedChange(e, "basicInformation")
+                        }
                         placeholder=""
                       />
                       <label className="input-u-label">City</label>
@@ -246,7 +291,9 @@ const EditHireDesignerProfile = () => {
                       type="text"
                       name="portfolioUrl"
                       value={formData.basicInformation.portfolioUrl}
-                      onChange={(e) => handleNestedChange(e, 'basicInformation')}
+                      onChange={(e) =>
+                        handleNestedChange(e, "basicInformation")
+                      }
                       placeholder=""
                     />
                     <label className="input-u-label">Portfolio URL</label>
@@ -266,7 +313,7 @@ const EditHireDesignerProfile = () => {
                           placeholder="Enter username"
                           className="input-u-username"
                           value={formData.onTheWeb.facebookUsername}
-                          onChange={(e) => handleNestedChange(e, 'onTheWeb')}
+                          onChange={(e) => handleNestedChange(e, "onTheWeb")}
                         />
                       </div>
                       <div className="social-list">
@@ -279,7 +326,7 @@ const EditHireDesignerProfile = () => {
                           placeholder="Enter username"
                           className="input-u-username"
                           value={formData.onTheWeb.linkedinUsername}
-                          onChange={(e) => handleNestedChange(e, 'onTheWeb')}
+                          onChange={(e) => handleNestedChange(e, "onTheWeb")}
                         />
                       </div>
                       <div className="social-list">
@@ -292,7 +339,7 @@ const EditHireDesignerProfile = () => {
                           placeholder="Enter username"
                           className="input-u-username"
                           value={formData.onTheWeb.githubUsername}
-                          onChange={(e) => handleNestedChange(e, 'onTheWeb')}
+                          onChange={(e) => handleNestedChange(e, "onTheWeb")}
                         />
                       </div>
                     </div>

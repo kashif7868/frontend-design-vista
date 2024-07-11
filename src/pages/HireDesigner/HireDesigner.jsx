@@ -57,7 +57,9 @@ const HireDesigner = () => {
   useEffect(() => {
     const fetchDesigners = async () => {
       try {
-        const response = await axios.get("http://localhost:3000/api/designers/");
+        const response = await axios.get(
+          "http://localhost:3000/api/designers/"
+        );
         setDesigners(response.data);
       } catch (error) {
         console.error("Error fetching designers data:", error);
@@ -263,7 +265,6 @@ const HireDesigner = () => {
                             alt={`${designer.basicInformation.firstName} work ${
                               index + 1
                             }`}
-                            className="work-image"
                           />
                         ))}
                       </div>

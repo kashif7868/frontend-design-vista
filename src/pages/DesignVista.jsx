@@ -1,7 +1,6 @@
 import React from "react";
 import { motion } from "framer-motion";
 import ScrollTrigger from "react-scroll-trigger";
-import { Link } from "react-router-dom";
 import Slider from "react-slick";
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
@@ -228,17 +227,7 @@ const DesignVista = () => {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.9, duration: 0.5 }}
             className="cta-button"
-          >
-            <Link
-              to="/login_signUp"
-              smooth={true}
-              duration={500}
-              offset={-50}
-              className="cta-link"
-            >
-              Get Started
-            </Link>
-          </motion.div>
+          ></motion.div>
         </motion.div>
       </section>
     </>
