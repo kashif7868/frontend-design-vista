@@ -21,7 +21,7 @@ const Home = () => {
   const [selectedDesigner, setSelectedDesigner] = useState(null);
   const [showHirePopup, setShowHirePopup] = useState(false);
   const [errors, setErrors] = useState({});
-  // const baseURL = "http://localhost:3000/uploads/";
+  const [triggerAnimation, setTriggerAnimation] = useState(false);
   const usersPerPage = 25;
 
   const [formData, setFormData] = useState({
@@ -77,33 +77,36 @@ const Home = () => {
 
   const validateForm = () => {
     const newErrors = {};
-    if (!formData.companyName)
-      newErrors.companyName = "Company Name is required";
-    if (!formData.phoneNumber)
-      newErrors.phoneNumber = "Phone Number is required";
-    if (!formData.interviewDate)
-      newErrors.interviewDate = "Interview Date is required";
+    if (!formData.companyName) newErrors.companyName = "Company Name is required";
+    if (!formData.phoneNumber) newErrors.phoneNumber = "Phone Number is required";
+    if (!formData.phoneCountryCode) newErrors.phoneCountryCode = "Country Code is required";
+    if (!formData.interviewDate) newErrors.interviewDate = "Interview Date is required";
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const openPopup = async (designer) => {
-    setSelectedDesigner(designer);
+    setSelectedDesigner({
+      ...designer,
+      works: [], // Initialize works as an empty array
+    });
     if (designer && designer.id) {
       try {
-        const response = await axios.get(
-          `http://localhost:3000/api/work/${designer.id}`
-        );
-        const formattedWorks = response.data.map((work) => ({
-          id: work.id,
-          title: work.title,
-          image: work.image,
-          designer: work.designer || {},
-        }));
-        setSelectedDesigner((prev) => ({
-          ...prev,
-          works: formattedWorks,
-        }));
+        const response = await axios.get(`http://localhost:3000/api/work/${designer.id}`);
+        if (response.status === 200) {
+          const formattedWorks = response.data.map((work) => ({
+            id: work.id,
+            title: work.title,
+            image: work.image,
+            designer: work.designer || {},
+          }));
+          setSelectedDesigner((prev) => ({
+            ...prev,
+            works: formattedWorks,
+          }));
+        } else {
+          console.error("Error fetching works by designer ID: Work not found");
+        }
       } catch (error) {
         console.error("Error fetching works by designer ID: ", error);
       }
@@ -144,7 +147,7 @@ const Home = () => {
     <>
       <div className="banner-container-home">
         <div className="banner">
-          <ScrollTrigger>
+          <ScrollTrigger onEnter={() => setTriggerAnimation(true)}>
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
@@ -171,9 +174,7 @@ const Home = () => {
                 transition={{ delay: 1, duration: 0.5 }}
               >
                 <Typewriter
-                  words={[
-                    "Your Ultimate Destination For Fashion Designer Hire",
-                  ]}
+                  words={["Your Ultimate Destination For Fashion Designer Hire"]}
                   loop={1}
                   cursor
                   cursorStyle="_"
@@ -214,63 +215,81 @@ const Home = () => {
             </ul>
           </div>
         </div>
-        <div className="designer-work-sub-container">
-          {displayedUsers.length > 0 ? (
-            displayedUsers.map((user) => {
-              const designer = user.designer || {};
-              const profilePicture =
-                designer.profilePicture || defaultUserImage;
-              const firstName = designer.firstName || "";
-              const lastName = designer.lastName || "";
+        <ScrollTrigger onEnter={() => setTriggerAnimation(true)} onExit={() => setTriggerAnimation(false)}>
+          <motion.div
+            className="designer-work-sub-container"
+            initial="hidden"
+            animate={triggerAnimation ? "visible" : "hidden"}
+            variants={{
+              hidden: { opacity: 0 },
+              visible: {
+                opacity: 1,
+                transition: {
+                  staggerChildren: 0.2,
+                },
+              },
+            }}
+          >
+            {displayedUsers.length > 0 ? (
+              displayedUsers.map((user) => {
+                const designer = user.designer || {};
+                const profilePicture = designer.profilePicture || defaultUserImage;
+                const firstName = designer.firstName || "";
+                const lastName = designer.lastName || "";
 
-              return (
-                <div
-                  key={user.id}
-                  className="ds-work-card"
-                  onClick={() => openPopup(designer)}
-                >
-                  <div className="ds-work-image">
-                    <Link to="#">
-                      <img src={user.image} alt={user.title} />
-                    </Link>
-                    <div className="title-con">
+                return (
+                  <motion.div
+                    key={user.id}
+                    className="ds-work-card"
+                    onClick={() => openPopup(designer)}
+                    variants={{
+                      hidden: { opacity: 0, x: -100 },
+                      visible: { opacity: 1, x: 0 },
+                    }}
+                    transition={{ duration: 0.5, ease: "easeOut" }}
+                  >
+                    <div className="ds-work-image">
                       <Link to="#">
-                        <span className="title">{user.title}</span>
+                        <img src={user.image} alt={user.title} />
+                      </Link>
+                      <div className="title-con">
+                        <Link to="#">
+                          <span className="title">{user.title}</span>
+                        </Link>
+                      </div>
+                    </div>
+                    <div className="ds-user-content">
+                      <div className="user-image">
+                        <Link to="#">
+                          <img
+                            src={profilePicture}
+                            alt={`${firstName} ${lastName}`}
+                          />
+                        </Link>
+                      </div>
+                      <Link to="#" className="user-name">
+                        {`${firstName} ${lastName}`}
                       </Link>
                     </div>
-                  </div>
-                  <div className="ds-user-content">
-                    <div className="user-image">
-                      <Link to="#">
-                        <img
-                          src={profilePicture}
-                          alt={`${firstName} ${lastName}`}
-                        />
-                      </Link>
-                    </div>
-                    <Link to="#" className="user-name">
-                      {`${firstName} ${lastName}`}
-                    </Link>
-                  </div>
+                  </motion.div>
+                );
+              })
+            ) : (
+              <div className="no-designers-found">
+                <div className="no-found">
+                  <span>No designers found.</span>
                 </div>
-              );
-            })
-          ) : (
-            <div className="no-designers-found">
-              <div className="no-found">
-                <span>No designers found.</span>
               </div>
-            </div>
-          )}
-        </div>
-        {displayedUsers.length > 0 &&
-          displayedUsers.length < filteredUsers.length && (
-            <div className="load-more-container">
-              <button className="load-more-button" onClick={loadMoreUsers}>
-                More Designers
-              </button>
-            </div>
-          )}
+            )}
+          </motion.div>
+        </ScrollTrigger>
+        {displayedUsers.length > 0 && displayedUsers.length < filteredUsers.length && (
+          <div className="load-more-container">
+            <button className="load-more-button" onClick={loadMoreUsers}>
+              More Designers
+            </button>
+          </div>
+        )}
       </div>
       {selectedDesigner && (
         <Modal
@@ -328,10 +347,7 @@ const Home = () => {
             <AiOutlineClose />
           </button>
           <div className="modal-content">
-            <h3>
-              Hire{" "}
-              {`${selectedDesigner.firstName} ${selectedDesigner.lastName}`}
-            </h3>
+            <h3>Hire {`${selectedDesigner.firstName} ${selectedDesigner.lastName}`}</h3>
             <div className="form-group">
               <input
                 type="text"
@@ -354,20 +370,23 @@ const Home = () => {
                   name="phoneCountryCode"
                   value={formData.phoneCountryCode}
                   onChange={handleInputChange}
-                  className="input-u-country"
+                  className={errors.phoneCountryCode ? "error" : ""}
                 >
+                  <option value="">Select Country Code</option>
                   {countryCodes.map((code) => (
                     <option key={code.code} value={code.code}>
                       {code.country} ({code.code})
                     </option>
                   ))}
                 </select>
-                <label
-                  htmlFor="phoneCountryCode"
-                  className="input-u-label"
-                ></label>
+                {errors.phoneCountryCode && (
+                  <span className="error-message">{errors.phoneCountryCode}</span>
+                )}
+                <label htmlFor="phoneCountryCode" className="input-u-label">
+                  Country Code
+                </label>
               </div>
-              <div className="from-group">
+              <div className="form-group">
                 <input
                   type="text"
                   name="phoneNumber"
@@ -391,7 +410,7 @@ const Home = () => {
                 placeholder=""
                 value={formData.location}
                 onChange={handleInputChange}
-                className=""
+                className="input-u-country"
               />
               <label htmlFor="location" className="input-u-label">
                 Location
@@ -421,9 +440,6 @@ const Home = () => {
                 onChange={handleInputChange}
                 className="input-u-note"
               ></textarea>
-              {errors.note && (
-                <span className="error-message">{errors.note}</span>
-              )}
               <label htmlFor="note" className="input-u-label-note">
                 Note
               </label>

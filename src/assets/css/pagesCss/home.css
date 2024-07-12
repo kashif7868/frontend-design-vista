@@ -12,20 +12,28 @@
   color: #fff;
 }
 
-.banner-content h2 {
+.banner-content h1 {
   font-size: 6vh;
   text-transform: uppercase;
   letter-spacing: 2px;
   margin: 0;
-  text-shadow: 0px 13px 10px rgb(0 0 0 / 80%);
+  text-shadow: 0 8px 16px rgb(0 111 255 / 47%), 0 4px 8px rgb(0 0 0 / 67%),
+    0 2px 4px rgba(0, 0, 0, 0.4);
   opacity: 0;
+}
+.banner-content h1 span {
+  font-size: 6vh;
 }
 
 .banner-content p {
   font-size: 4vh;
   margin-top: 1rem;
-  text-shadow: 0px 13px 10px rgb(0 0 0 / 80%);
+  text-shadow: 0 8px 16px rgb(0 111 255 / 47%), 0 4px 8px rgb(0 0 0 / 67%),
+    0 2px 4px rgba(0, 0, 0, 0.4);
   opacity: 0;
+}
+.banner-content p span {
+  font-size: 4vh;
 }
 
 .banner-content > * {
@@ -645,8 +653,8 @@
   transform: translate(-50%, -50%);
   animation: popupFadeIn 0.5s ease;
   padding: 20px;
-  max-width: 90%;
   width: 100%;
+  z-index: 1001;
   box-sizing: border-box;
 }
 
