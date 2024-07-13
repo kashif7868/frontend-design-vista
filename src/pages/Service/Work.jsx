@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import "../../assets/css/pagesCss/workPage.css";
@@ -32,6 +31,10 @@ const Work = () => {
   });
   const [showMenuIndex, setShowMenuIndex] = useState(null);
   const [editIndex, setEditIndex] = useState(null);
+
+  // Pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const itemsPerPage = 12;
 
   useEffect(() => {
     dispatch(fetchWorks());
@@ -141,6 +144,12 @@ const Work = () => {
     setShowMenuIndex(showMenuIndex === index ? null : index);
   };
 
+  const loadMoreWorks = () => {
+    setCurrentPage((prevPage) => prevPage + 1);
+  };
+
+  const displayedWorks = works.slice(0, currentPage * itemsPerPage);
+
   return (
     <div className="work-main-container">
       <div className="work-sub-container">
@@ -148,7 +157,7 @@ const Work = () => {
           className="work-list"
           style={{ display: works.length > 0 ? "grid" : "none" }}
         >
-          {works.map((work, index) => (
+          {displayedWorks.map((work, index) => (
             <div className="work-items-container" key={index}>
               <div className="work-item">
                 <img src={work.image} alt={work.title} className="work-image" />
@@ -179,6 +188,13 @@ const Work = () => {
             </div>
           ))}
         </div>
+        {currentPage * itemsPerPage < works.length && (
+          <div className="more-works-container">
+            <button className="more-load-btn" onClick={loadMoreWorks}>
+              More works
+            </button>
+          </div>
+        )}
         <div className="work-container">
           <div className="work-item-add">
             <span className="work-icon" onClick={togglePopup}>

@@ -4,34 +4,17 @@ import { motion } from "framer-motion";
 import { IoMdSearch } from "react-icons/io";
 import ScrollTrigger from "react-scroll-trigger";
 import { Typewriter } from "react-simple-typewriter";
-import "../assets/css/pagesCss/home.css";
 import axios from "axios";
 import { Link } from "react-router-dom";
 import defaultUserImage from "../assets/images/default-user.png";
-import Modal from "react-modal";
-import { toast } from "react-toastify";
-import countryCodes from "../data/countriesCode.json";
-import "react-toastify/dist/ReactToastify.css";
-import { AiOutlineClose } from "react-icons/ai";
+import "../assets/css/pagesCss/home.css";
 
 const Home = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [usersData, setUsersData] = useState([]);
-  const [selectedDesigner, setSelectedDesigner] = useState(null);
-  const [showHirePopup, setShowHirePopup] = useState(false);
-  const [errors, setErrors] = useState({});
   const [triggerAnimation, setTriggerAnimation] = useState(false);
   const usersPerPage = 25;
-
-  const [formData, setFormData] = useState({
-    companyName: "",
-    phoneCountryCode: "",
-    phoneNumber: "",
-    location: "",
-    interviewDate: "",
-    note: "",
-  });
 
   useEffect(() => {
     const fetchUsersData = async () => {
@@ -41,7 +24,7 @@ const Home = () => {
           id: work.id,
           title: work.title,
           image: work.image,
-          designer: work.designer || {}, // Ensure designer object exists
+          designer: work.designer || {},
         }));
         setUsersData(formattedData);
       } catch (error) {
@@ -57,7 +40,7 @@ const Home = () => {
   );
 
   const loadMoreUsers = () => {
-    setCurrentPage(currentPage + 1);
+    setCurrentPage((prevPage) => prevPage + 1);
   };
 
   const displayedUsers = filteredUsers.slice(0, currentPage * usersPerPage);
@@ -65,82 +48,6 @@ const Home = () => {
   const handleSearch = (e) => {
     e.preventDefault();
     setCurrentPage(1);
-  };
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const validateForm = () => {
-    const newErrors = {};
-    if (!formData.companyName) newErrors.companyName = "Company Name is required";
-    if (!formData.phoneNumber) newErrors.phoneNumber = "Phone Number is required";
-    if (!formData.phoneCountryCode) newErrors.phoneCountryCode = "Country Code is required";
-    if (!formData.interviewDate) newErrors.interviewDate = "Interview Date is required";
-    setErrors(newErrors);
-    return Object.keys(newErrors).length === 0;
-  };
-
-  const openPopup = async (designer) => {
-    setSelectedDesigner({
-      ...designer,
-      works: [], // Initialize works as an empty array
-    });
-    if (designer && designer.id) {
-      try {
-        const response = await axios.get(`http://localhost:3000/api/work/${designer.id}`);
-        if (response.status === 200) {
-          const formattedWorks = response.data.map((work) => ({
-            id: work.id,
-            title: work.title,
-            image: work.image,
-            designer: work.designer || {},
-          }));
-          setSelectedDesigner((prev) => ({
-            ...prev,
-            works: formattedWorks,
-          }));
-        } else {
-          console.error("Error fetching works by designer ID: Work not found");
-        }
-      } catch (error) {
-        console.error("Error fetching works by designer ID: ", error);
-      }
-    }
-  };
-
-  const handleSendMessage = async () => {
-    if (validateForm()) {
-      const data = {
-        companyName: formData.companyName,
-        country: formData.phoneCountryCode,
-        phoneNumber: formData.phoneNumber,
-        location: formData.location,
-        interviewDate: formData.interviewDate,
-        note: formData.note,
-        designer: selectedDesigner._id,
-        hireDesigner: selectedDesigner._id,
-      };
-
-      try {
-        await axios.post("http://localhost:3000/api/message/", data);
-        toast.success("Message sent successfully");
-        setSelectedDesigner(null);
-        setShowHirePopup(false);
-      } catch (error) {
-        toast.error("Error sending message");
-        console.error("Error sending message:", error);
-      }
-    }
-  };
-
-  const closePopup = () => {
-    setSelectedDesigner(null);
-    setShowHirePopup(false);
   };
 
   return (
@@ -215,7 +122,10 @@ const Home = () => {
             </ul>
           </div>
         </div>
-        <ScrollTrigger onEnter={() => setTriggerAnimation(true)} onExit={() => setTriggerAnimation(false)}>
+        <ScrollTrigger
+          onEnter={() => setTriggerAnimation(true)}
+          onExit={() => setTriggerAnimation(false)}
+        >
           <motion.div
             className="designer-work-sub-container"
             initial="hidden"
@@ -233,45 +143,40 @@ const Home = () => {
             {displayedUsers.length > 0 ? (
               displayedUsers.map((user) => {
                 const designer = user.designer || {};
-                const profilePicture = designer.profilePicture || defaultUserImage;
+                const profilePicture =
+                  designer.profilePicture || defaultUserImage;
                 const firstName = designer.firstName || "";
                 const lastName = designer.lastName || "";
 
                 return (
-                  <motion.div
-                    key={user.id}
-                    className="ds-work-card"
-                    onClick={() => openPopup(designer)}
-                    variants={{
-                      hidden: { opacity: 0, x: -100 },
-                      visible: { opacity: 1, x: 0 },
-                    }}
-                    transition={{ duration: 0.5, ease: "easeOut" }}
-                  >
+                  <div key={user.id} className="ds-work-card">
                     <div className="ds-work-image">
-                      <Link to="#">
+                      <Link to={`/designer-profile-view/${designer.id}`}>
                         <img src={user.image} alt={user.title} />
                       </Link>
                       <div className="title-con">
-                        <Link to="#">
+                        <Link to={`/designer-profile-view/${designer.id}`}>
                           <span className="title">{user.title}</span>
                         </Link>
                       </div>
                     </div>
                     <div className="ds-user-content">
                       <div className="user-image">
-                        <Link to="#">
+                        <Link to={`/designer-profile-view/${designer.id}`}>
                           <img
                             src={profilePicture}
                             alt={`${firstName} ${lastName}`}
                           />
                         </Link>
                       </div>
-                      <Link to="#" className="user-name">
+                      <Link
+                        to={`/designer-profile-view/${designer.id}`}
+                        className="user-name"
+                      >
                         {`${firstName} ${lastName}`}
                       </Link>
                     </div>
-                  </motion.div>
+                  </div>
                 );
               })
             ) : (
@@ -283,173 +188,15 @@ const Home = () => {
             )}
           </motion.div>
         </ScrollTrigger>
-        {displayedUsers.length > 0 && displayedUsers.length < filteredUsers.length && (
-          <div className="load-more-container">
-            <button className="load-more-button" onClick={loadMoreUsers}>
-              More Designers
-            </button>
-          </div>
-        )}
-      </div>
-      {selectedDesigner && (
-        <Modal
-          isOpen={!!selectedDesigner}
-          onRequestClose={closePopup}
-          contentLabel="Designer Details"
-          className="designer-popup-modal"
-          overlayClassName="designer-popup-overlay"
-        >
-          <div className="designer-popup-content">
-            <button className="close-button" onClick={closePopup}>
-              <AiOutlineClose />
-            </button>
-            <div className="designer-popup-header">
-              <img
-                src={selectedDesigner.profilePicture || defaultUserImage}
-                alt={`${selectedDesigner.firstName} ${selectedDesigner.lastName}`}
-              />
-              <h2>{`${selectedDesigner.firstName} ${selectedDesigner.lastName}`}</h2>
-              <p>{selectedDesigner.country}</p>
-            </div>
-            <div className="designer-popup-body">
-              <h3>Works:</h3>
-              {selectedDesigner.works && selectedDesigner.works.length > 0 ? (
-                selectedDesigner.works.map((work, index) => (
-                  <div key={index} className="designer-work">
-                    <img src={work.image} alt={work.title} />
-                    <p>{work.title}</p>
-                  </div>
-                ))
-              ) : (
-                <p>No works available</p>
-              )}
-            </div>
-            <div className="hire-designer-button-container">
-              <button
-                className="hire-designer-button"
-                onClick={() => setShowHirePopup(true)}
-              >
-                Hire Designer
+        {displayedUsers.length > 0 &&
+          displayedUsers.length < filteredUsers.length && (
+            <div className="load-more-container">
+              <button className="load-more-button" onClick={loadMoreUsers}>
+                More Designers
               </button>
             </div>
-          </div>
-        </Modal>
-      )}
-      {showHirePopup && selectedDesigner && (
-        <Modal
-          isOpen={showHirePopup}
-          onRequestClose={closePopup}
-          contentLabel="Hire Designer Modal"
-          className="designer-hire-model-popup"
-          overlayClassName="hire-designer-modal-overlay"
-        >
-          <button className="modal-close-button" onClick={closePopup}>
-            <AiOutlineClose />
-          </button>
-          <div className="modal-content">
-            <h3>Hire {`${selectedDesigner.firstName} ${selectedDesigner.lastName}`}</h3>
-            <div className="form-group">
-              <input
-                type="text"
-                name="companyName"
-                placeholder=""
-                value={formData.companyName}
-                onChange={handleInputChange}
-                className={errors.companyName ? "error" : ""}
-              />
-              <label htmlFor="companyName" className="input-u-label">
-                Company Name
-              </label>
-            </div>
-            {errors.companyName && (
-              <span className="error-message">{errors.companyName}</span>
-            )}
-            <div className="form-group-cont">
-              <div className="form-group">
-                <select
-                  name="phoneCountryCode"
-                  value={formData.phoneCountryCode}
-                  onChange={handleInputChange}
-                  className={errors.phoneCountryCode ? "error" : ""}
-                >
-                  <option value="">Select Country Code</option>
-                  {countryCodes.map((code) => (
-                    <option key={code.code} value={code.code}>
-                      {code.country} ({code.code})
-                    </option>
-                  ))}
-                </select>
-                {errors.phoneCountryCode && (
-                  <span className="error-message">{errors.phoneCountryCode}</span>
-                )}
-                <label htmlFor="phoneCountryCode" className="input-u-label">
-                  Country Code
-                </label>
-              </div>
-              <div className="form-group">
-                <input
-                  type="text"
-                  name="phoneNumber"
-                  placeholder=""
-                  value={formData.phoneNumber}
-                  onChange={handleInputChange}
-                  className={errors.phoneNumber ? "error" : ""}
-                />
-                <label htmlFor="phoneNumber" className="input-u-label">
-                  Phone Number
-                </label>
-                {errors.phoneNumber && (
-                  <span className="error-message">{errors.phoneNumber}</span>
-                )}
-              </div>
-            </div>
-            <div className="form-group">
-              <input
-                type="text"
-                name="location"
-                placeholder=""
-                value={formData.location}
-                onChange={handleInputChange}
-                className="input-u-country"
-              />
-              <label htmlFor="location" className="input-u-label">
-                Location
-              </label>
-            </div>
-            <div className="form-group">
-              <input
-                type="date"
-                name="interviewDate"
-                placeholder=""
-                value={formData.interviewDate}
-                onChange={handleInputChange}
-                className={errors.interviewDate ? "error" : ""}
-              />
-              {errors.interviewDate && (
-                <span className="error-message">{errors.interviewDate}</span>
-              )}
-              <label htmlFor="interviewDate" className="input-u-label">
-                Interview Date
-              </label>
-            </div>
-            <div className="form-group">
-              <textarea
-                name="note"
-                placeholder=""
-                value={formData.note}
-                onChange={handleInputChange}
-                className="input-u-note"
-              ></textarea>
-              <label htmlFor="note" className="input-u-label-note">
-                Note
-              </label>
-            </div>
-            <button className="send-message" onClick={handleSendMessage}>
-              Send Message
-            </button>
-          </div>
-        </Modal>
-      )}
+          )}
+      </div>
     </>
   );
 };
