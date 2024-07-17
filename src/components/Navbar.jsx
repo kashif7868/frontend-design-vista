@@ -33,7 +33,8 @@ const Navbar = () => {
   const [messages, setMessages] = useState([]);
   const [unreadMessagesCount, setUnreadMessagesCount] = useState(0);
   const [selectedMessage, setSelectedMessage] = useState(null);
-  const [activeProfile, setActiveProfile] = useState('designer'); // Add state for active profile
+  const [activeProfile, setActiveProfile] = useState('designer');
+  const [profilePicture, setProfilePicture] = useState(defaultUserPicture);
 
   const userMenuRef = useRef(null);
   const messageMenuRef = useRef(null);
@@ -89,6 +90,16 @@ const Navbar = () => {
     };
   }, [openMenu]);
 
+  useEffect(() => {
+    const storedProfilePicture = localStorage.getItem('profilePicturePreview');
+    if (storedProfilePicture) {
+      setProfilePicture(storedProfilePicture);
+    } else if (designerProfile?.profilePicture || hireDesignerProfile?.profilePicture) {
+      const profilePic = designerProfile?.profilePicture || hireDesignerProfile?.profilePicture;
+      setProfilePicture(`${process.env.REACT_APP_ROOT_PATH}${profilePic}`);
+    }
+  }, [designerProfile, hireDesignerProfile]);
+
   const getCurrentDateTime = () => {
     const now = new Date();
     const options = {
@@ -109,7 +120,7 @@ const Navbar = () => {
       fetchNotifications();
     }
     if (menu === 'message' && openMenu !== 'message') {
-      setUnreadMessagesCount(0); // Mark all messages as read when the menu is opened
+      setUnreadMessagesCount(0);
     }
     setOpenMenu(openMenu === menu ? null : menu);
   };
@@ -190,12 +201,12 @@ const Navbar = () => {
   };
 
   const profileData =
-    activeProfile === 'designer' ? designerProfile : hireDesignerProfile; // Use activeProfile
-  const userProfilePicture = profileData?.profilePicture || defaultUserPicture;
+    activeProfile === 'designer' ? designerProfile : hireDesignerProfile;
+  const userProfilePicture = profileData?.profilePicture || profilePicture;
 
   const handleProfileClick = (profile) => {
-    setActiveProfile(profile); // Set active profile
-    setOpenMenu(null); // Close any open menu
+    setActiveProfile(profile);
+    setOpenMenu(null);
   };
 
   return (
@@ -275,7 +286,7 @@ const Navbar = () => {
                 )}
               </button>
             </li>
-            {activeProfile === 'designer' && ( // Display message icon for designer profile
+            {activeProfile === 'designer' && (
               <li className='nav-list'>
                 <button
                   aria-label='Message'
@@ -429,7 +440,7 @@ const Navbar = () => {
         <ClientModel
           isOpen={showClientModal}
           onClose={handleCloseClientModal}
-          messageId={selectedMessage.id} // Pass messageId
+          messageId={selectedMessage.id}
         />
       )}
     </header>

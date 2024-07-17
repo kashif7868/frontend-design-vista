@@ -99,6 +99,7 @@ export const createDesignerProfile = createAsyncThunk(
           },
         }
       );
+      localStorage.setItem("designerProfile", JSON.stringify(response.data)); // Save to local storage
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -113,6 +114,7 @@ export const getDesignerById = createAsyncThunk(
       const response = await axios.get(
         `http://localhost:3000/api/designers/${userId}`
       );
+      localStorage.setItem("designerProfile", JSON.stringify(response.data)); // Save to local storage
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -134,6 +136,7 @@ export const updateDesignerProfile = createAsyncThunk(
           },
         }
       );
+      localStorage.setItem("designerProfile", JSON.stringify(response.data)); // Save to local storage
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -148,6 +151,7 @@ export const deleteDesignerProfile = createAsyncThunk(
       const response = await axios.delete(
         `http://localhost:3000/api/designers/${designerId}`
       );
+      localStorage.removeItem("designerProfile"); // Remove from local storage
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -170,11 +174,13 @@ const designerSlice = createSlice({
         }
         return acc[key];
       }, state.profile);
+      localStorage.setItem("designerProfile", JSON.stringify(state.profile)); // Save to local storage
     },
     clearProfile: (state) => {
       state.profile = initialState.profile;
       state.status = "idle";
       state.error = null;
+      localStorage.removeItem("designerProfile"); // Remove from local storage
     },
   },
   extraReducers: (builder) => {
@@ -185,6 +191,7 @@ const designerSlice = createSlice({
       .addCase(createDesignerProfile.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.profile = action.payload;
+        localStorage.setItem("designerProfile", JSON.stringify(state.profile)); // Save to local storage
       })
       .addCase(createDesignerProfile.rejected, (state, action) => {
         state.status = "failed";
@@ -196,6 +203,7 @@ const designerSlice = createSlice({
       .addCase(getDesignerById.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.profile = action.payload;
+        localStorage.setItem("designerProfile", JSON.stringify(state.profile)); // Save to local storage
       })
       .addCase(getDesignerById.rejected, (state, action) => {
         state.status = "failed";
@@ -207,6 +215,7 @@ const designerSlice = createSlice({
       .addCase(updateDesignerProfile.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.profile = action.payload;
+        localStorage.setItem("designerProfile", JSON.stringify(state.profile)); // Save to local storage
       })
       .addCase(updateDesignerProfile.rejected, (state, action) => {
         state.status = "failed";
@@ -218,6 +227,7 @@ const designerSlice = createSlice({
       .addCase(deleteDesignerProfile.fulfilled, (state) => {
         state.status = "succeeded";
         state.profile = initialState.profile;
+        localStorage.removeItem("designerProfile"); 
       })
       .addCase(deleteDesignerProfile.rejected, (state, action) => {
         state.status = "failed";

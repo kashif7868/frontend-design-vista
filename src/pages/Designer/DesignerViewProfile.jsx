@@ -1,33 +1,41 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
+import { Link, useParams } from "react-router-dom";
+import axios from "axios";
 import "../../assets/css/pagesCss/designerViewProfile.css";
 import defaultUserImage from "../../assets/images/default-user.png";
 import coverImage from "../../assets/images/home-banner.webp";
-import workImage1 from "../../assets/images/work/work1.png";
-import workImage2 from "../../assets/images/work/work2.png";
-import workImage3 from "../../assets/images/work/work3.png";
-import workImage4 from "../../assets/images/work/work4.png";
-import workImage5 from "../../assets/images/work/work5.png";
-import {
-  FaMapMarkerAlt,
-  FaLinkedin,
-  FaTwitter,
-  FaInstagram,
-} from "react-icons/fa";
+import { FaMapMarkerAlt, FaLinkedin, FaTwitter, FaInstagram } from "react-icons/fa";
 
-const DesignerViewProfile = ({ designer, baseURL, handleHireClick }) => {
+const baseURL = "http://localhost:3000/uploads/";
+
+const DesignerViewProfile = ({ handleHireClick }) => {
+  const { id } = useParams();
+  const [designer, setDesigner] = useState(null);
+
+  useEffect(() => {
+    const fetchDesignerData = async () => {
+      try {
+        const response = await axios.get(`http://localhost:3000/api/designers/${id}`);
+        setDesigner(response.data);
+      } catch (error) {
+        console.error("Error fetching designer data: ", error);
+      }
+    };
+
+    fetchDesignerData();
+  }, [id]);
+
   if (!designer) {
     return <div>Loading...</div>;
   }
+
+  const user = designer.user || {};
 
   return (
     <div className="designer-view-profile">
       <div className="designer-cover-banner-container">
         <img
-          src={
-            designer.coverPhoto
-              ? `${baseURL}${designer.coverPhoto}`
-              : coverImage
-          }
+          src={user.coverImage ? `${baseURL}${user.coverImage}` : coverImage}
           alt="Cover"
           className="cover-image"
         />
@@ -35,9 +43,7 @@ const DesignerViewProfile = ({ designer, baseURL, handleHireClick }) => {
       <div className="designer-p-picture">
         <img
           src={
-            designer.profilePicture
-              ? `${baseURL}${designer.profilePicture}`
-              : defaultUserImage
+            user.profilePicture ? `${baseURL}${user.profilePicture}` : defaultUserImage
           }
           alt="Profile"
           className="profile-image"
@@ -46,38 +52,38 @@ const DesignerViewProfile = ({ designer, baseURL, handleHireClick }) => {
       <div className="designer-info-container">
         <div className="designer-info">
           <div className="designer-content-info">
-            <h3 className="designer-by-name">{`${designer.basicInformation.firstName} ${designer.basicInformation.lastName}`}</h3>
+            <h3 className="designer-by-name">{`${user.firstName || ""} ${user.lastName || ""}`}</h3>
             <span className="designer-by-location">
-              <FaMapMarkerAlt /> {designer.basicInformation.country}
+              <FaMapMarkerAlt /> {user.country || ""}
             </span>
-            <p className="designer-bio">{designer.bio}</p>
+            <p className="designer-bio">{user.description || ""}</p>
             <div className="designer-social-media">
-              {designer.socialMedia?.linkedin && (
-                <a
-                  href={designer.socialMedia.linkedin}
+              {user.linkedinUsername && (
+                <Link
+                  to={{ pathname: `https://www.linkedin.com/in/${user.linkedinUsername}` }}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <FaLinkedin />
-                </a>
+                </Link>
               )}
-              {designer.socialMedia?.twitter && (
-                <a
-                  href={designer.socialMedia.twitter}
+              {user.twitterUsername && (
+                <Link
+                  to={{ pathname: `https://twitter.com/${user.twitterUsername}` }}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <FaTwitter />
-                </a>
+                </Link>
               )}
-              {designer.socialMedia?.instagram && (
-                <a
-                  href={designer.socialMedia.instagram}
+              {user.instagramUsername && (
+                <Link
+                  to={{ pathname: `https://www.instagram.com/${user.instagramUsername}` }}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
                   <FaInstagram />
-                </a>
+                </Link>
               )}
             </div>
           </div>
@@ -87,7 +93,7 @@ const DesignerViewProfile = ({ designer, baseURL, handleHireClick }) => {
             className="designer-hire-btn"
             onClick={() => handleHireClick(designer)}
           >
-            Hire {designer.basicInformation.firstName}
+            Hire {`${user.firstName}`}
           </button>
         </div>
       </div>
@@ -97,8 +103,8 @@ const DesignerViewProfile = ({ designer, baseURL, handleHireClick }) => {
             <div className="designer-works-container" key={index}>
               <div className="work-card-image">
                 <img
-                  src={`${baseURL}${work.image}`}
-                  alt={`${designer.basicInformation.firstName} work ${index + 1}`}
+                  src={`${baseURL}${work}`}
+                  alt={`${user.firstName || "Designer"} work ${index + 1}`}
                 />
               </div>
               <div className="work-title">
@@ -111,39 +117,4 @@ const DesignerViewProfile = ({ designer, baseURL, handleHireClick }) => {
   );
 };
 
-// Dummy Data for Testing
-const designer = {
-  coverPhoto: coverImage,
-  profilePicture: defaultUserImage,
-  basicInformation: {
-    firstName: "Kashif",
-    lastName: "Ali",
-    country: "Lahore",
-  },
-  bio: "A highly creative and multitalented Graphic Designer with extensive experience in multimedia, marketing, and print design.",
-  socialMedia: {
-    linkedin: "https://www.linkedin.com/in/johndoe/",
-    twitter: "https://twitter.com/johndoe",
-    instagram: "https://www.instagram.com/johndoe/",
-  },
-  works: [
-    { image: workImage1 },
-    { image: workImage2 },
-    { image: workImage3 },
-    { image: workImage4 },
-    { image: workImage5 },
-  ],
-};
-
-// Use the component with dummy data
-const App = () => (
-  <DesignerViewProfile
-    designer={designer}
-    baseURL=""
-    handleHireClick={(designer) =>
-      alert(`Hire ${designer.basicInformation.firstName} clicked!`)
-    }
-  />
-);
-
-export default App;
+export default DesignerViewProfile;

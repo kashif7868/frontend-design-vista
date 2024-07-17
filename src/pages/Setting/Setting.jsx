@@ -4,8 +4,8 @@ import { Link } from "react-router-dom";
 import "../../assets/css/pagesCss/settings.css";
 import { useAuth } from "../../context/authContext";
 import { useDispatch } from "react-redux";
-import { deleteHireDesigner } from "../../app/features/hireDesignerSlice";
-import { deleteDesignerProfile, clearProfile } from "../../app/features/designerSlice";
+import { deleteHireDesigner, clearProfile as clearHireProfile } from "../../app/features/hireDesignerSlice";
+import { deleteDesignerProfile, clearProfile as clearDesignerProfile } from "../../app/features/designerSlice";
 import Swal from "sweetalert2";
 
 const Setting = () => {
@@ -84,8 +84,8 @@ const Setting = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-          // Make sure to pass the correct ID
           await dispatch(deleteHireDesigner(user.id)).unwrap();
+          dispatch(clearHireProfile());
           Swal.fire({
             title: "Profile Deleted",
             text: "Your hire designer profile has been successfully deleted.",
@@ -115,7 +115,7 @@ const Setting = () => {
       if (result.isConfirmed) {
         try {
           await dispatch(deleteDesignerProfile(user.id)).unwrap();
-          dispatch(clearProfile());
+          dispatch(clearDesignerProfile());
           Swal.fire({
             title: "Profile Deleted",
             text: "Your designer profile has been successfully deleted.",
@@ -134,105 +134,89 @@ const Setting = () => {
 
   return (
     <>
-     <div className="setting-main-container">
-     <div className="home-page-back-container">
-        <div className="setting-banner">
-          <Link to="/">
-            <IoCaretBack />
-            Back to Home
-          </Link>
+      <div className="setting-main-container">
+        <div className="home-page-back-container">
+          <div className="setting-banner">
+            <Link to="/">
+              <IoCaretBack />
+              Back to Home
+            </Link>
+          </div>
         </div>
-      </div>
-      <div className="settings-main-container">
-        <div className="setting-side-bar">
-          <span className="active">Account Information</span>
-          <span onClick={handleDeleteAccount}>Delete Account</span>
-          <span onClick={handleDeleteHireDesignerProfile}>
-            Delete Hire Designer Profile
-          </span>
-          <span onClick={handleDeleteDesignerProfile}>
-            Delete Designer Profile
-          </span>
-        </div>
-        <div className="setting-container">
-          <div className="account-info">
-            <h3>ACCOUNT INFORMATION</h3>
-            <div className="account-info-container">
-              <div className="form-group">
-                <div className="info-item">
-                  <input
-                    type="email"
-                    name="email"
-                    placeholder="Email"
-                    className={`input-u-email ${
-                      isEditingEmail ? "active" : ""
-                    }`}
-                    value={email}
-                    onChange={handleEmailChange}
-                    disabled={!isEditingEmail}
-                  />
-                  {!isEditingEmail ? (
-                    <button className="edit-btn-u" onClick={toggleEmailEdit}>
-                      Edit
-                    </button>
-                  ) : (
-                    <div className="settings-btn-container">
-                      <button
-                        className="edit-save-btn"
-                        onClick={handleSaveEmail}
-                      >
-                        Save
+        <div className="settings-main-container">
+          <div className="setting-side-bar">
+            <span className="active">Account Information</span>
+            <span onClick={handleDeleteAccount}>Delete Account</span>
+            <span onClick={handleDeleteHireDesignerProfile}>
+              Delete Hire Designer Profile
+            </span>
+            <span onClick={handleDeleteDesignerProfile}>
+              Delete Designer Profile
+            </span>
+          </div>
+          <div className="setting-container">
+            <div className="account-info">
+              <h3>ACCOUNT INFORMATION</h3>
+              <div className="account-info-container">
+                <div className="form-group">
+                  <div className="info-item">
+                    <input
+                      type="email"
+                      name="email"
+                      placeholder="Email"
+                      className={`input-u-email ${isEditingEmail ? "active" : ""}`}
+                      value={email}
+                      onChange={handleEmailChange}
+                      disabled={!isEditingEmail}
+                    />
+                    {!isEditingEmail ? (
+                      <button className="edit-btn-u" onClick={toggleEmailEdit}>
+                        Edit
                       </button>
-                      <button
-                        className="edit-cancel-btn"
-                        onClick={handleCancelEmailEdit}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  )}
+                    ) : (
+                      <div className="settings-btn-container">
+                        <button className="edit-save-btn" onClick={handleSaveEmail}>
+                          Save
+                        </button>
+                        <button className="edit-cancel-btn" onClick={handleCancelEmailEdit}>
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
-              </div>
-              <div className="form-group">
-                <div className="info-item">
-                  <input
-                    type="password"
-                    name="password"
-                    placeholder="Password"
-                    className={`input-u-password ${
-                      isEditingPassword ? "active" : ""
-                    }`}
-                    value={password}
-                    onChange={handlePasswordChange}
-                    disabled={!isEditingPassword}
-                  />
-                  {!isEditingPassword ? (
-                    <button className="edit-btn-u" onClick={togglePasswordEdit}>
-                      Edit
-                    </button>
-                  ) : (
-                    <div className="settings-btn-container">
-                      <button
-                        className="edit-save-btn"
-                        onClick={handleSavePassword}
-                      >
-                        Save
+                <div className="form-group">
+                  <div className="info-item">
+                    <input
+                      type="password"
+                      name="password"
+                      placeholder="Password"
+                      className={`input-u-password ${isEditingPassword ? "active" : ""}`}
+                      value={password}
+                      onChange={handlePasswordChange}
+                      disabled={!isEditingPassword}
+                    />
+                    {!isEditingPassword ? (
+                      <button className="edit-btn-u" onClick={togglePasswordEdit}>
+                        Edit
                       </button>
-                      <button
-                        className="edit-cancel-btn"
-                        onClick={handleCancelPasswordEdit}
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  )}
+                    ) : (
+                      <div className="settings-btn-container">
+                        <button className="edit-save-btn" onClick={handleSavePassword}>
+                          Save
+                        </button>
+                        <button className="edit-cancel-btn" onClick={handleCancelPasswordEdit}>
+                          Cancel
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
           </div>
         </div>
       </div>
-     </div>
     </>
   );
 };

@@ -2,8 +2,8 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
 const initialState = {
-  bannerImage: localStorage.getItem("bannerImage") || null,
-  coverImageId: localStorage.getItem("coverImageId") || null,
+  bannerImage: null,
+  coverImageId: null,
   status: "idle",
   error: null,
 };
@@ -110,8 +110,6 @@ const coverBannerSlice = createSlice({
         state.status = "succeeded";
         state.bannerImage = action.payload.image;
         state.coverImageId = action.payload.id;
-        localStorage.setItem("bannerImage", action.payload.image);
-        localStorage.setItem("coverImageId", action.payload.id);
       })
       .addCase(createCoverImage.rejected, (state, action) => {
         state.status = "failed";
@@ -124,8 +122,6 @@ const coverBannerSlice = createSlice({
         state.status = "succeeded";
         state.bannerImage = null;
         state.coverImageId = null;
-        localStorage.removeItem("bannerImage");
-        localStorage.removeItem("coverImageId");
       })
       .addCase(deleteCoverImage.rejected, (state, action) => {
         state.status = "failed";
@@ -137,7 +133,6 @@ const coverBannerSlice = createSlice({
       .addCase(updateCoverImage.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.bannerImage = action.payload.image;
-        localStorage.setItem("bannerImage", action.payload.image);
       })
       .addCase(updateCoverImage.rejected, (state, action) => {
         state.status = "failed";
@@ -150,8 +145,6 @@ const coverBannerSlice = createSlice({
         state.status = "succeeded";
         state.bannerImage = action.payload.image;
         state.coverImageId = action.payload.id;
-        localStorage.setItem("bannerImage", action.payload.image);
-        localStorage.setItem("coverImageId", action.payload.id);
       })
       .addCase(fetchCoverImageById.rejected, (state, action) => {
         state.status = "failed";

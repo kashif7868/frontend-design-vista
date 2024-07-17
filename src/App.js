@@ -46,7 +46,7 @@ function AppContent() {
         <Route path="/hiredesigner" element={<HireDesigner />} />
         <Route path="/login_signUp" element={<LoginSignUp />} />
         <Route path="/work" element={<Work />} />
-        <Route path="/designer-profile-view/:designerId" element={<DesignerViewProfile />} />
+        <Route path="/designer-profile-view/:id" element={<DesignerViewProfile />} />
         <Route path="/designer-profile" element={<DesignerProfile />} />
         <Route path="/edit-designer-profile" element={<EditDesignerProfile />} />
         <Route path="/hire-designer-profile" element={<HireDesignerProfile />} />

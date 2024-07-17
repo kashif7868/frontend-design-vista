@@ -1,6 +1,16 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
+const initialState = {
+  designer: {
+    basicInformation: {},
+    onTheWeb: {}
+  },
+  designers: [],
+  status: 'idle',
+  error: null,
+};
+
 export const createHireDesigner = createAsyncThunk(
   'hireDesigner/createHireDesigner',
   async (data, { rejectWithValue }) => {
@@ -10,14 +20,13 @@ export const createHireDesigner = createAsyncThunk(
           'Content-Type': 'multipart/form-data',
         },
       });
+      localStorage.setItem("hireDesignerProfile", JSON.stringify(response.data)); // Save to local storage
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'An error occurred');
     }
   }
 );
-
-
 
 export const updateHireDesigner = createAsyncThunk(
   'hireDesigner/updateHireDesigner',
@@ -28,6 +37,7 @@ export const updateHireDesigner = createAsyncThunk(
           'Content-Type': 'multipart/form-data',
         },
       });
+      localStorage.setItem("hireDesignerProfile", JSON.stringify(response.data)); // Save to local storage
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data || 'An error occurred');
@@ -40,6 +50,7 @@ export const getHireDesignerById = createAsyncThunk(
   async (hireDesignerId, { rejectWithValue }) => {
     try {
       const response = await axios.get(`http://localhost:3000/api/hire/${hireDesignerId}`);
+      localStorage.setItem("hireDesignerProfile", JSON.stringify(response.data)); // Save to local storage
       return response.data;
     } catch (error) {
       if (error.response?.status === 404) {
@@ -55,23 +66,17 @@ export const deleteHireDesigner = createAsyncThunk(
   async (hireDesignerId, { rejectWithValue }) => {
     try {
       await axios.delete(`http://localhost:3000/api/hire/${hireDesignerId}`);
+      localStorage.removeItem("hireDesignerProfile"); // Remove from local storage
       return hireDesignerId; // Return the ID
     } catch (error) {
       return rejectWithValue(error.response?.data || 'An error occurred');
     }
   }
 );
+
 const hireDesignerSlice = createSlice({
   name: 'hireDesigner',
-  initialState: {
-    designer: {
-      basicInformation: {},
-      onTheWeb: {}
-    },
-    designers: [],
-    status: 'idle',
-    error: null,
-  },
+  initialState,
   reducers: {
     appendHireDesignerProfileField: (state, action) => {
       const { name, value } = action.payload;
@@ -86,6 +91,12 @@ const hireDesignerSlice = createSlice({
           state.designer[name] = value;
         }
       }
+    },
+    clearProfile: (state) => {
+      state.designer = initialState.designer;
+      state.status = 'idle';
+      state.error = null;
+      localStorage.removeItem("hireDesignerProfile"); // Remove from local storage
     },
   },
   extraReducers: (builder) => {
@@ -126,9 +137,9 @@ const hireDesignerSlice = createSlice({
       .addCase(deleteHireDesigner.pending, (state) => {
         state.status = 'loading';
       })
-      .addCase(deleteHireDesigner.fulfilled, (state, action) => {
+      .addCase(deleteHireDesigner.fulfilled, (state) => {
         state.status = 'succeeded';
-        state.designer = null;
+        state.designer = initialState.designer;
       })
       .addCase(deleteHireDesigner.rejected, (state, action) => {
         state.status = 'failed';
@@ -137,6 +148,5 @@ const hireDesignerSlice = createSlice({
   },
 });
 
-
-export const { appendHireDesignerProfileField } = hireDesignerSlice.actions;
+export const { appendHireDesignerProfileField, clearProfile } = hireDesignerSlice.actions;
 export default hireDesignerSlice.reducer;

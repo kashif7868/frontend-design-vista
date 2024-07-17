@@ -25,27 +25,51 @@ const EditDesignerProfile = () => {
   const designerStatus = useSelector((state) => state.designer.status);
   const designerError = useSelector((state) => state.designer.error);
   const [profilePicture, setProfilePicture] = useState(defaultUserImage);
+  const [formData, setFormData] = useState(designerProfile);
 
   useEffect(() => {
-    if (user) {
+    const storedProfile = localStorage.getItem("designerProfile");
+    if (storedProfile) {
+      const profile = JSON.parse(storedProfile);
+      setFormData(profile);
+      setProfilePicture(
+        `${process.env.REACT_APP_ROOT_PATH}${profile.profilePicture}`
+      );
+      dispatch(appendDesignerProfileField({ name: "user", value: user.id }));
+    } else if (user) {
       dispatch(appendDesignerProfileField({ name: "user", value: user.id }));
       dispatch(getDesignerById(user.id));
     }
   }, [user, dispatch]);
 
   useEffect(() => {
-    if (designerProfile.profilePicture) {
+    const storedProfilePicture = localStorage.getItem("profilePicturePreview");
+    if (storedProfilePicture) {
+      setProfilePicture(storedProfilePicture);
+    } else if (designerProfile.profilePicture) {
       setProfilePicture(
         `${process.env.REACT_APP_ROOT_PATH}${designerProfile.profilePicture}`
       );
     }
   }, [designerProfile]);
 
+  useEffect(() => {
+    setFormData(designerProfile);
+  }, [designerProfile]);
+
   const handleNestedChange = (e, category) => {
     const { name, value } = e.target;
+    setFormData((prevFormData) => ({
+      ...prevFormData,
+      [category]: {
+        ...prevFormData[category],
+        [name]: value,
+      },
+    }));
+
     dispatch(appendDesignerProfileField({
       name: `${category}.${name}`,
-      value,
+      value: value
     }));
   };
 
@@ -54,13 +78,21 @@ const EditDesignerProfile = () => {
     if (file) {
       const reader = new FileReader();
       reader.onload = () => {
-        setProfilePicture(reader.result);
-        dispatch(
-          appendDesignerProfileField({ name: "profilePicturePreview", value: reader.result })
-        );
-        dispatch(
-          appendDesignerProfileField({ name: "profilePicture", value: file })
-        );
+        const result = reader.result;
+        setProfilePicture(result);
+        localStorage.setItem("profilePicturePreview", result);
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          profilePicture: file,
+        }));
+        dispatch(appendDesignerProfileField({
+          name: "profilePicturePreview",
+          value: result,
+        }));
+        dispatch(appendDesignerProfileField({
+          name: "profilePicture",
+          value: file,
+        }));
       };
       reader.readAsDataURL(file);
     }
@@ -68,18 +100,23 @@ const EditDesignerProfile = () => {
 
   const handleSubmit = async () => {
     try {
-      const profileData = { ...designerProfile, user: user.id };
+      const profileData = { ...formData, user: user.id };
 
+      let result;
       if (designerProfile && designerProfile.id) {
-        await dispatch(
+        result = await dispatch(
           updateDesignerProfile({
             designerId: designerProfile.id,
             profileData,
           })
         ).unwrap();
       } else {
-        await dispatch(createDesignerProfile(profileData)).unwrap();
+        result = await dispatch(createDesignerProfile(profileData)).unwrap();
       }
+
+      setProfilePicture(`${process.env.REACT_APP_ROOT_PATH}${result.profilePicture}`);
+      localStorage.setItem("designerProfile", JSON.stringify(result)); // Save to local storage
+      localStorage.removeItem("profilePicturePreview");
 
       navigate("/designer-profile");
 
@@ -101,7 +138,6 @@ const EditDesignerProfile = () => {
     return <div>Loading...</div>;
   }
 
-  const formData = designerProfile;
   const isLoading = designerStatus === "loading";
   const profileExists = designerProfile && designerProfile.id;
 

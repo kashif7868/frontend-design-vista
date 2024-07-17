@@ -30,7 +30,11 @@ const DesignerProfile = ({ coverImageId }) => {
   );
 
   useEffect(() => {
-    if (user && user.id && role === "designer") {
+    const storedProfile = localStorage.getItem("designerProfile");
+    if (storedProfile) {
+      const profile = JSON.parse(storedProfile);
+      dispatch(getDesignerById(profile.user));
+    } else if (user && user.id && role === "designer") {
       dispatch(getDesignerById(user.id));
     }
   }, [user, role, dispatch]);

@@ -3,7 +3,8 @@ import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { clearProfile } from "../app/features/designerSlice"; // Import the clearProfile action
+import { clearProfile as clearDesignerProfile } from "../app/features/designerSlice"; // Import the clearProfile action for designer
+import { clearProfile as clearHireDesignerProfile } from "../app/features/hireDesignerSlice"; // Import the clearProfile action for hire designer
 import defaultUserPicture from "../assets/images/default-user.png";
 
 const AuthContext = createContext();
@@ -30,7 +31,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("designerProfile");
     localStorage.removeItem("hireDesignerProfile");
-    dispatch(clearProfile()); // Dispatch action to clear designer profile
+    dispatch(clearDesignerProfile()); // Dispatch action to clear designer profile
+    dispatch(clearHireDesignerProfile()); // Dispatch action to clear hire designer profile
   }, [dispatch]);
 
   useEffect(() => {
@@ -81,9 +83,10 @@ export const AuthProvider = ({ children }) => {
       setRole(newUser.role);
 
       localStorage.setItem("user", JSON.stringify(newUser));
-      dispatch(clearProfile()); // Clear profile state for new user
+      dispatch(clearDesignerProfile()); // Clear profile state for new user
+      dispatch(clearHireDesignerProfile()); // Clear hire designer profile state for new user
 
-      navigate("/");
+      navigate("/profile_setup");
 
       Swal.fire({
         icon: "success",
@@ -117,7 +120,8 @@ export const AuthProvider = ({ children }) => {
       setRole(user.role);
 
       localStorage.setItem("user", JSON.stringify(user));
-      dispatch(clearProfile()); // Clear profile state for new user
+      dispatch(clearDesignerProfile()); // Clear profile state for new user
+      dispatch(clearHireDesignerProfile()); // Clear hire designer profile state for new user
 
       navigate("/");
 
@@ -148,7 +152,8 @@ export const AuthProvider = ({ children }) => {
       );
 
       clearTokens();
-      dispatch(clearProfile()); // Clear profile state on logout
+      dispatch(clearDesignerProfile()); // Clear profile state on logout
+      dispatch(clearHireDesignerProfile()); // Clear hire designer profile state on logout
 
       Swal.fire({
         icon: "success",
@@ -192,7 +197,8 @@ export const AuthProvider = ({ children }) => {
       });
 
       clearTokens();
-      dispatch(clearProfile()); // Clear profile state on account deletion
+      dispatch(clearDesignerProfile()); // Clear profile state on account deletion
+      dispatch(clearHireDesignerProfile()); // Clear hire designer profile state on account deletion
 
       Swal.fire({
         icon: "success",
@@ -212,6 +218,24 @@ export const AuthProvider = ({ children }) => {
 
   const isAuthenticated = () => !!user;
 
+  const getUserById = async (id) => {
+    try {
+      const response = await axios.get(`http://localhost:3000/api/auth/users/${id}`, {
+        headers: {
+          Authorization: `Bearer ${accessToken}`,
+        },
+      });
+      return response.data.user;
+    } catch (error) {
+      Swal.fire({
+        icon: "error",
+        title: "Error",
+        text: error.response.data.message || "Failed to get user by ID",
+      });
+      return null;
+    }
+  };
+
   return (
     <AuthContext.Provider
       value={{
@@ -223,6 +247,7 @@ export const AuthProvider = ({ children }) => {
         deleteAccount,
         accessToken,
         role,
+        getUserById,
       }}
     >
       {children}
