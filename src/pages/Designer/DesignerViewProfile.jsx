@@ -4,7 +4,7 @@ import axios from "axios";
 import "../../assets/css/pagesCss/designerViewProfile.css";
 import defaultUserImage from "../../assets/images/default-user.png";
 import coverImage from "../../assets/images/home-banner.webp";
-import { FaMapMarkerAlt, FaLinkedin, FaTwitter, FaInstagram } from "react-icons/fa";
+import { FaMapMarkerAlt, FaLinkedin, FaGithub, FaFacebook } from "react-icons/fa";
 
 const baseURL = "http://localhost:3000/uploads/";
 
@@ -67,30 +67,30 @@ const DesignerViewProfile = ({ handleHireClick }) => {
                   <FaLinkedin />
                 </Link>
               )}
-              {user.twitterUsername && (
+              {user.facebookUsername && (
                 <Link
-                  to={{ pathname: `https://twitter.com/${user.twitterUsername}` }}
+                  to={{ pathname: `https://www.facebook.com/${user.facebookUsername}` }}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <FaTwitter />
+                  <FaFacebook />
                 </Link>
               )}
-              {user.instagramUsername && (
+              {user.githubUsername && (
                 <Link
-                  to={{ pathname: `https://www.instagram.com/${user.instagramUsername}` }}
+                  to={{ pathname: `https://github.com/${user.githubUsername}` }}
                   target="_blank"
                   rel="noopener noreferrer"
                 >
-                  <FaInstagram />
+                  <FaGithub />
                 </Link>
               )}
             </div>
           </div>
         </div>
-        <div className="designer-buttons-container">
+        <div className="designer-btn-container">
           <button
-            className="designer-hire-btn"
+            className="designer-to-hire-btn"
             onClick={() => handleHireClick(designer)}
           >
             Hire {`${user.firstName}`}

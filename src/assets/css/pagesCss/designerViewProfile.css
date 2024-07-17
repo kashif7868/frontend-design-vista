@@ -103,14 +103,14 @@
 /* ***************************************** */
 /* *********Buttons Container CSS  ********* */
 /* ***************************************** */
-.designer-buttons-container {
+.designer-btn-container {
   width: 100%;
   display: flex;
   justify-content: center;
   margin-bottom: 20px;
 }
 
-.designer-hire-btn {
+.designer-to-hire-btn {
   background-color: #0030dd;
   color: #fff;
   padding: 10px 20px;
@@ -121,7 +121,7 @@
   font-size: 1.2rem;
 }
 
-.designer-hire-btn:hover {
+.designer-to-hire-btn:hover {
   background-color: #0020aa;
 }
 /* ***************************************** */
