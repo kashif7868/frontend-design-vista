@@ -15,7 +15,7 @@ import DesignerProfile from "./pages/Designer/DesignerProfile";
 import DesignerViewProfile from "./pages/Designer/DesignerViewProfile";
 import HireDesignerProfile from "./pages/HireDesigner/HireDesignerProfile";
 import EditHireDesignerProfile from "./pages/HireDesigner/EditHireDesignerProfile";
-import { AuthProvider } from "./context/authContext.js";
+import { AuthProvider } from "./context/authContext";
 import { UserRoleProvider } from "./context/UserRoleContext";
 
 import "./App.css";
@@ -47,8 +47,8 @@ function AppContent() {
         <Route path="/login_signUp" element={<LoginSignUp />} />
         <Route path="/work" element={<Work />} />
         <Route path="/designer-profile-view/:id" element={<DesignerViewProfile />} />
-        <Route path="/designer-profile" element={<DesignerProfile />} />
-        <Route path="/edit-designer-profile" element={<EditDesignerProfile />} />
+        <Route path="/designer-profile/:id" element={<DesignerProfile />} />
+        <Route path="/edit-designer-profile/:id" element={<EditDesignerProfile />} />
         <Route path="/hire-designer-profile" element={<HireDesignerProfile />} />
         <Route path="/edit-hire-designer-profile" element={<EditHireDesignerProfile />} />
         <Route path="/setting" element={<Setting />} />

@@ -1,11 +1,12 @@
 import React, { useState, useEffect } from "react";
+import { useParams, Link } from "react-router-dom";
 import { MdLocationPin, MdEdit, MdDownloadForOffline } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
-import { useAuth } from "../../context/authContext";
-import { Link } from "react-router-dom";
 import defaultUserImage from "../../assets/images/default-user.png";
 import { FaFacebook, FaLinkedinIn, FaGithub } from "react-icons/fa";
-import { getDesignerById } from "../../app/features/designerSlice";
+import { toast } from "react-toastify";
+import WorkPage from "../Service/Work";
+import "../../assets/css/pagesCss/profile.css";
 import {
   createCoverImage,
   deleteCoverImage,
@@ -13,13 +14,11 @@ import {
   clearBannerImage,
   fetchCoverImageById,
 } from "../../app/features/coverBannerSlice";
-import { toast } from "react-toastify";
-import WorkPage from "../Service/Work";
-import "../../assets/css/pagesCss/profile.css";
+import { getDesignerByIdByWork } from "../../app/features/designerSlice";
 
 const DesignerProfile = ({ coverImageId }) => {
+  const { id } = useParams();
   const [activeLink, setActiveLink] = useState("work");
-  const { user, role } = useAuth();
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.designer.profile);
   const status = useSelector((state) => state.designer.status);
@@ -31,32 +30,29 @@ const DesignerProfile = ({ coverImageId }) => {
 
   useEffect(() => {
     const storedProfile = localStorage.getItem("designerProfile");
-    if (storedProfile) {
-      const profile = JSON.parse(storedProfile);
-      dispatch(getDesignerById(profile.user));
-    } else if (user && user.id && role === "designer") {
-      dispatch(getDesignerById(user.id));
+    if (!storedProfile && id) {
+      dispatch(getDesignerByIdByWork(id));
     }
-  }, [user, role, dispatch]);
+  }, [id, dispatch]);
 
   useEffect(() => {
-    if (user && user.id && role === "designer") {
+    if (id) {
       if (coverImageId) {
         dispatch(fetchCoverImageById(coverImageId));
       } else {
         dispatch(clearBannerImage());
       }
     }
-  }, [coverImageId, dispatch, user, role]);
+  }, [coverImageId, dispatch, id]);
 
-  if (!user || status === "loading" || coverBannerStatus === "loading") {
+  if (status === "loading" || coverBannerStatus === "loading") {
     return <div>Loading...</div>;
   }
 
   const handleBannerUpload = (event) => {
     const file = event.target.files[0];
-    if (file && user && user.id) {
-      dispatch(createCoverImage({ userId: user.id, imageFile: file }))
+    if (file && id) {
+      dispatch(createCoverImage({ userId: id, imageFile: file }))
         .unwrap()
         .then(() => {
           toast.success("Banner image uploaded successfully!");
@@ -69,7 +65,7 @@ const DesignerProfile = ({ coverImageId }) => {
   };
 
   const handleRemoveBanner = () => {
-    if (currentCoverImageId && user && user.id) {
+    if (currentCoverImageId && id) {
       dispatch(deleteCoverImage(currentCoverImageId))
         .unwrap()
         .then(() => {
@@ -84,7 +80,7 @@ const DesignerProfile = ({ coverImageId }) => {
 
   const handleReplaceBanner = (event) => {
     const file = event.target.files[0];
-    if (file && user && user.id) {
+    if (file && id) {
       if (currentCoverImageId) {
         dispatch(
           updateCoverImage({
@@ -181,8 +177,8 @@ const DesignerProfile = ({ coverImageId }) => {
               </div>
               <div className="profile-info">
                 <h1 className="profile-name">
-                  {profile.basicInformation?.firstName || user.firstName}{" "}
-                  {profile.basicInformation?.lastName || user.lastName}
+                  {profile.basicInformation?.firstName || ""}{" "}
+                  {profile.basicInformation?.lastName || ""}
                 </h1>
                 <p className="profile-location">
                   <MdLocationPin />
@@ -190,21 +186,24 @@ const DesignerProfile = ({ coverImageId }) => {
                   {profile.basicInformation?.city || ""}
                 </p>
 
-                <span className="cetagory-con">
+                <span className="category-con">
                   {" "}
                   {profile.basicInformation?.categoryName || ""}
                 </span>
               </div>
             </div>
             <div className="edit-profile-container">
-              <Link to="/edit-designer-profile" className="edit-profile-btn">
+              <Link
+                to={`/edit-designer-profile/${id}`}
+                className="edit-profile-btn"
+              >
                 <MdEdit />
                 Edit Your Profile
               </Link>
             </div>
             <div className="dg-info-sub-container">
               <div className="dg-info">
-              <h6 className="welcome-dg">
+                <h6 className="welcome-dg">
                   <span>Welcome to Your Design Haven!</span>
                 </h6>
                 <span className="dg-description">

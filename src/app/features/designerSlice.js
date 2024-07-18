@@ -107,12 +107,12 @@ export const createDesignerProfile = createAsyncThunk(
   }
 );
 
-export const getDesignerById = createAsyncThunk(
-  "designer/getDesignerById",
-  async (userId, { rejectWithValue }) => {
+export const getDesignerByIdByWork = createAsyncThunk(
+  "designer/getDesignerByIdByWork",
+  async (id, { rejectWithValue }) => {
     try {
       const response = await axios.get(
-        `http://localhost:3000/api/designers/${userId}`
+        `http://localhost:3000/api/designers/${id}`
       );
       localStorage.setItem("designerProfile", JSON.stringify(response.data)); // Save to local storage
       return response.data;
@@ -158,7 +158,7 @@ export const deleteDesignerProfile = createAsyncThunk(
     }
   }
 );
-
+// designerSlice.js
 const designerSlice = createSlice({
   name: "designer",
   initialState,
@@ -182,6 +182,12 @@ const designerSlice = createSlice({
       state.error = null;
       localStorage.removeItem("designerProfile"); // Remove from local storage
     },
+    loadProfileFromStorage: (state) => {
+      const storedProfile = localStorage.getItem("designerProfile");
+      if (storedProfile) {
+        state.profile = JSON.parse(storedProfile);
+      }
+    }
   },
   extraReducers: (builder) => {
     builder
@@ -197,15 +203,15 @@ const designerSlice = createSlice({
         state.status = "failed";
         state.error = action.payload;
       })
-      .addCase(getDesignerById.pending, (state) => {
+      .addCase(getDesignerByIdByWork.pending, (state) => {
         state.status = "loading";
       })
-      .addCase(getDesignerById.fulfilled, (state, action) => {
+      .addCase(getDesignerByIdByWork.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.profile = action.payload;
         localStorage.setItem("designerProfile", JSON.stringify(state.profile)); // Save to local storage
       })
-      .addCase(getDesignerById.rejected, (state, action) => {
+      .addCase(getDesignerByIdByWork.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       })
@@ -236,6 +242,6 @@ const designerSlice = createSlice({
   },
 });
 
-export const { appendDesignerProfileField, clearProfile } = designerSlice.actions;
+export const { appendDesignerProfileField, clearProfile, loadProfileFromStorage } = designerSlice.actions;
 
 export default designerSlice.reducer;

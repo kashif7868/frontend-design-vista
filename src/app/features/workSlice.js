@@ -14,8 +14,8 @@ export const fetchWorks = createAsyncThunk(
   }
 );
 
-export const addWork = createAsyncThunk(
-  'works/addWork',
+export const createWork = createAsyncThunk(
+  'works/createWork',
   async ({ workData, designerId }, { rejectWithValue }) => {
     try {
       const formData = new FormData();
@@ -38,8 +38,8 @@ export const addWork = createAsyncThunk(
   }
 );
 
-export const editWork = createAsyncThunk(
-  'works/editWork',
+export const updateWork = createAsyncThunk(
+  'works/updateWork',
   async ({ id, updatedWork, designerId }, { rejectWithValue }) => {
     try {
       const formData = new FormData();
@@ -109,28 +109,28 @@ const worksSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(addWork.pending, (state) => {
+      .addCase(createWork.pending, (state) => {
         state.loading = true;
       })
-      .addCase(addWork.fulfilled, (state, action) => {
+      .addCase(createWork.fulfilled, (state, action) => {
         state.loading = false;
         state.works.push(action.payload);
       })
-      .addCase(addWork.rejected, (state, action) => {
+      .addCase(createWork.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(editWork.pending, (state) => {
+      .addCase(updateWork.pending, (state) => {
         state.loading = true;
       })
-      .addCase(editWork.fulfilled, (state, action) => {
+      .addCase(updateWork.fulfilled, (state, action) => {
         state.loading = false;
         const index = state.works.findIndex((work) => work.id === action.payload.id);
         if (index !== -1) {
           state.works[index] = action.payload;
         }
       })
-      .addCase(editWork.rejected, (state, action) => {
+      .addCase(updateWork.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })

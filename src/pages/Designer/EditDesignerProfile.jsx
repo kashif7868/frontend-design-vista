@@ -1,8 +1,8 @@
+// EditDesignerProfile.js
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useParams, useNavigate } from "react-router-dom";
 import { IoCaretBack } from "react-icons/io5";
 import { FaCloudUploadAlt } from "react-icons/fa";
-import { useNavigate } from "react-router-dom";
 import { MdOutlineVerifiedUser } from "react-icons/md";
 import { FaFacebook, FaLinkedinIn, FaGithub } from "react-icons/fa";
 import { useDispatch, useSelector } from "react-redux";
@@ -13,11 +13,13 @@ import "../../assets/css/pagesCss/editProfile.css";
 import {
   createDesignerProfile,
   appendDesignerProfileField,
-  getDesignerById,
+  getDesignerByIdByWork,
   updateDesignerProfile,
+  loadProfileFromStorage
 } from "../../app/features/designerSlice";
 
 const EditDesignerProfile = () => {
+  const { id } = useParams();
   const { user } = useAuth();
   const navigate = useNavigate();
   const dispatch = useDispatch();
@@ -28,6 +30,7 @@ const EditDesignerProfile = () => {
   const [formData, setFormData] = useState(designerProfile);
 
   useEffect(() => {
+    dispatch(loadProfileFromStorage());
     const storedProfile = localStorage.getItem("designerProfile");
     if (storedProfile) {
       const profile = JSON.parse(storedProfile);
@@ -38,7 +41,7 @@ const EditDesignerProfile = () => {
       dispatch(appendDesignerProfileField({ name: "user", value: user.id }));
     } else if (user) {
       dispatch(appendDesignerProfileField({ name: "user", value: user.id }));
-      dispatch(getDesignerById(user.id));
+      dispatch(getDesignerByIdByWork(user.id));
     }
   }, [user, dispatch]);
 
@@ -67,10 +70,12 @@ const EditDesignerProfile = () => {
       },
     }));
 
-    dispatch(appendDesignerProfileField({
-      name: `${category}.${name}`,
-      value: value
-    }));
+    dispatch(
+      appendDesignerProfileField({
+        name: `${category}.${name}`,
+        value: value,
+      })
+    );
   };
 
   const handleProfilePictureChange = (e) => {
@@ -85,14 +90,18 @@ const EditDesignerProfile = () => {
           ...prevFormData,
           profilePicture: file,
         }));
-        dispatch(appendDesignerProfileField({
-          name: "profilePicturePreview",
-          value: result,
-        }));
-        dispatch(appendDesignerProfileField({
-          name: "profilePicture",
-          value: file,
-        }));
+        dispatch(
+          appendDesignerProfileField({
+            name: "profilePicturePreview",
+            value: result,
+          })
+        );
+        dispatch(
+          appendDesignerProfileField({
+            name: "profilePicture",
+            value: file,
+          })
+        );
       };
       reader.readAsDataURL(file);
     }
@@ -114,11 +123,13 @@ const EditDesignerProfile = () => {
         result = await dispatch(createDesignerProfile(profileData)).unwrap();
       }
 
-      setProfilePicture(`${process.env.REACT_APP_ROOT_PATH}${result.profilePicture}`);
+      setProfilePicture(
+        `${process.env.REACT_APP_ROOT_PATH}${result.profilePicture}`
+      );
       localStorage.setItem("designerProfile", JSON.stringify(result)); // Save to local storage
       localStorage.removeItem("profilePicturePreview");
 
-      navigate("/designer-profile");
+      navigate(`/designer-profile/${result.id}`);
 
       Swal.fire({
         icon: "success",
@@ -156,7 +167,7 @@ const EditDesignerProfile = () => {
   return (
     <>
       <div className="back-to-profile-container">
-        <Link to="/designer-profile">
+        <Link to={`/designer-profile/${id}`}>
           <IoCaretBack />
           Back to Profile
         </Link>
@@ -197,7 +208,7 @@ const EditDesignerProfile = () => {
                         type="text"
                         name="firstName"
                         value={formData.basicInformation?.firstName || ""}
-                        onChange={(e) => handleNestedChange(e, 'basicInformation')}
+                        onChange={(e) => handleNestedChange(e, "basicInformation")}
                         placeholder=""
                         className="input-u-fname"
                       />
@@ -208,7 +219,7 @@ const EditDesignerProfile = () => {
                         type="text"
                         name="lastName"
                         value={formData.basicInformation?.lastName || ""}
-                        onChange={(e) => handleNestedChange(e, 'basicInformation')}
+                        onChange={(e) => handleNestedChange(e, "basicInformation")}
                         placeholder=""
                       />
                       <label className="input-u-label">Last Name</label>
@@ -219,7 +230,7 @@ const EditDesignerProfile = () => {
                       type="text"
                       name="categoryName"
                       value={formData.basicInformation?.categoryName || ""}
-                      onChange={(e) => handleNestedChange(e, 'basicInformation')}
+                      onChange={(e) => handleNestedChange(e, "basicInformation")}
                       placeholder=""
                       required
                     />
@@ -231,7 +242,7 @@ const EditDesignerProfile = () => {
                         type="text"
                         name="country"
                         value={formData.basicInformation?.country || ""}
-                        onChange={(e) => handleNestedChange(e, 'basicInformation')}
+                        onChange={(e) => handleNestedChange(e, "basicInformation")}
                         placeholder=""
                       />
                       <label className="input-u-label">Country</label>
@@ -241,7 +252,7 @@ const EditDesignerProfile = () => {
                         type="text"
                         name="city"
                         value={formData.basicInformation?.city || ""}
-                        onChange={(e) => handleNestedChange(e, 'basicInformation')}
+                        onChange={(e) => handleNestedChange(e, "basicInformation")}
                         placeholder=""
                       />
                       <label className="input-u-label">City</label>
@@ -252,7 +263,7 @@ const EditDesignerProfile = () => {
                       type="text"
                       name="portfolioUrl"
                       value={formData.basicInformation?.portfolioUrl || ""}
-                      onChange={(e) => handleNestedChange(e, 'basicInformation')}
+                      onChange={(e) => handleNestedChange(e, "basicInformation")}
                       placeholder=""
                     />
                     <label className="input-u-label">Portfolio URL</label>
@@ -279,7 +290,7 @@ const EditDesignerProfile = () => {
                           placeholder="Enter username"
                           className="input-u-username"
                           value={formData.onTheWeb?.facebookUsername || ""}
-                          onChange={(e) => handleNestedChange(e, 'onTheWeb')}
+                          onChange={(e) => handleNestedChange(e, "onTheWeb")}
                         />
                       </div>
                       <div className="social-list">
@@ -292,7 +303,7 @@ const EditDesignerProfile = () => {
                           placeholder="Enter username"
                           className="input-u-username"
                           value={formData.onTheWeb?.linkedinUsername || ""}
-                          onChange={(e) => handleNestedChange(e, 'onTheWeb')}
+                          onChange={(e) => handleNestedChange(e, "onTheWeb")}
                         />
                       </div>
                       <div className="social-list">
@@ -305,7 +316,7 @@ const EditDesignerProfile = () => {
                           placeholder="Enter username"
                           className="input-u-username"
                           value={formData.onTheWeb?.githubUsername || ""}
-                          onChange={(e) => handleNestedChange(e, 'onTheWeb')}
+                          onChange={(e) => handleNestedChange(e, "onTheWeb")}
                         />
                       </div>
                     </div>
@@ -320,7 +331,7 @@ const EditDesignerProfile = () => {
                           type="text"
                           name="sectionTitle"
                           value={formData.aboutMe?.sectionTitle || ""}
-                          onChange={(e) => handleNestedChange(e, 'aboutMe')}
+                          onChange={(e) => handleNestedChange(e, "aboutMe")}
                           placeholder=""
                           className="input-u-section-title"
                         />
@@ -330,7 +341,7 @@ const EditDesignerProfile = () => {
                         <textarea
                           name="description"
                           value={formData.aboutMe?.description || ""}
-                          onChange={(e) => handleNestedChange(e, 'aboutMe')}
+                          onChange={(e) => handleNestedChange(e, "aboutMe")}
                           placeholder=""
                           className="input-u-description"
                         ></textarea>
@@ -349,7 +360,7 @@ const EditDesignerProfile = () => {
                         type="text"
                         name="companyName"
                         value={formData.workExperience?.companyName || ""}
-                        onChange={(e) => handleNestedChange(e, 'workExperience')}
+                        onChange={(e) => handleNestedChange(e, "workExperience")}
                         placeholder=""
                         className="input-u-company-name"
                       />
@@ -360,7 +371,7 @@ const EditDesignerProfile = () => {
                         type="text"
                         name="position"
                         value={formData.workExperience?.position || ""}
-                        onChange={(e) => handleNestedChange(e, 'workExperience')}
+                        onChange={(e) => handleNestedChange(e, "workExperience")}
                         placeholder=""
                         className="input-u-position"
                       />
@@ -372,7 +383,7 @@ const EditDesignerProfile = () => {
                           type="date"
                           name="startingFrom"
                           value={formData.workExperience?.startingFrom || ""}
-                          onChange={(e) => handleNestedChange(e, 'workExperience')}
+                          onChange={(e) => handleNestedChange(e, "workExperience")}
                           placeholder=""
                           className="input-u-start-date"
                         />
@@ -383,7 +394,7 @@ const EditDesignerProfile = () => {
                           type="date"
                           name="endingIn"
                           value={formData.workExperience?.endingIn || ""}
-                          onChange={(e) => handleNestedChange(e, 'workExperience')}
+                          onChange={(e) => handleNestedChange(e, "workExperience")}
                           placeholder=""
                           className="input-u-end-date"
                         />
@@ -394,7 +405,7 @@ const EditDesignerProfile = () => {
                       <textarea
                         name="details"
                         value={formData.workExperience?.details || ""}
-                        onChange={(e) => handleNestedChange(e, 'workExperience')}
+                        onChange={(e) => handleNestedChange(e, "workExperience")}
                         placeholder=""
                         className="input-u-details"
                       ></textarea>
@@ -403,7 +414,11 @@ const EditDesignerProfile = () => {
                   </div>
                 </div>
                 <div className="save-changes-container">
-                  <button className="save-changes-btn" onClick={handleSubmit} disabled={isLoading}>
+                  <button
+                    className="save-changes-btn"
+                    onClick={handleSubmit}
+                    disabled={designerStatus === "loading"}
+                  >
                     {profileExists ? "Update Profile" : "Create Profile"}
                   </button>
                 </div>

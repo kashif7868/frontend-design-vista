@@ -20,7 +20,7 @@ import CompanyUpdateModal from './componyUpdate/CompanyUpdateModal';
 import ClientModel from './Client/ClientModel';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { getDesignerById } from '../app/features/designerSlice';
+import { getDesignerByIdByWork } from '../app/features/designerSlice';
 import { getHireDesignerById } from '../app/features/hireDesignerSlice';
 
 const Navbar = () => {
@@ -50,7 +50,7 @@ const Navbar = () => {
   useEffect(() => {
     if (user) {
       if (user.role === 'designer') {
-        dispatch(getDesignerById(user.id));
+        dispatch(getDesignerByIdByWork(user.id));
       } else {
         dispatch(getHireDesignerById(user.id));
       }
@@ -374,7 +374,7 @@ const Navbar = () => {
                       <div className='user-link-ps'>
                         <li>
                           <Link
-                            to='/designer-profile'
+                            to='/designer-profile/:id'
                             onClick={() => handleProfileClick('designer')}
                           >
                             <FaUser className='user-icon' />

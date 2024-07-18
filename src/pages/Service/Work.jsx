@@ -7,8 +7,8 @@ import { BsThreeDots } from "react-icons/bs";
 import { FcRemoveImage } from "react-icons/fc";
 import {
   fetchWorks,
-  addWork,
-  editWork,
+  createWork,
+  updateWork,
   deleteWork,
 } from "./../../app/features/workSlice";
 import { toast } from "react-toastify";
@@ -97,7 +97,7 @@ const Work = () => {
 
       if (editIndex !== null) {
         const workId = works[editIndex].id;
-        dispatch(editWork({ id: workId, updatedWork: data, designerId }))
+        dispatch(updateWork({ id: workId, updatedWork: data, designerId }))
           .unwrap()
           .then(() => {
             toast.success("Work updated successfully 🎨");
@@ -106,7 +106,7 @@ const Work = () => {
             toast.error(`Error: ${error.message} ❌`);
           });
       } else {
-        dispatch(addWork({ workData: data, designerId }))
+        dispatch(createWork,({ workData: data, designerId }))
           .unwrap()
           .then(() => {
             toast.success("Work created successfully 🚀");
