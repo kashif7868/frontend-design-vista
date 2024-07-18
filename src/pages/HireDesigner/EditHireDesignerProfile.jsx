@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { IoCaretBack } from "react-icons/io5";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import Swal from "sweetalert2";
 import {
   FaCloudUploadAlt,
@@ -21,6 +21,7 @@ import {
 
 const EditHireDesignerProfile = () => {
   const { user } = useAuth();
+  const { hireDesignerId } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const hireDesignerStatus = useSelector((state) => state.hireDesigner.status);
@@ -49,9 +50,9 @@ const EditHireDesignerProfile = () => {
 
   useEffect(() => {
     const fetchProfile = async () => {
-      if (user) {
+      if (user && hireDesignerId) {
         try {
-          const profile = await dispatch(getHireDesignerById(user.id)).unwrap();
+          const profile = await dispatch(getHireDesignerById(hireDesignerId)).unwrap();
           if (profile) {
             setProfileExists(true);
             setFormData({
@@ -83,7 +84,7 @@ const EditHireDesignerProfile = () => {
     };
 
     fetchProfile();
-  }, [user, dispatch]);
+  }, [user, hireDesignerId, dispatch]);
 
   const handleNestedChange = (e, category) => {
     const { name, value } = e.target;
@@ -95,7 +96,6 @@ const EditHireDesignerProfile = () => {
       },
     }));
 
-    // Dispatch an action to update the store if necessary
     dispatch(appendHireDesignerProfileField({
       name: `${category}.${name}`,
       value: value
@@ -130,7 +130,6 @@ const EditHireDesignerProfile = () => {
     const data = new FormData();
     data.append("user", formData.user);
 
-    // Append nested fields individually
     Object.keys(formData.basicInformation).forEach((key) => {
       data.append(`basicInformation[${key}]`, formData.basicInformation[key]);
     });
@@ -138,7 +137,6 @@ const EditHireDesignerProfile = () => {
       data.append(`onTheWeb[${key}]`, formData.onTheWeb[key]);
     });
 
-    // Append profilePicture to form data
     if (formData.profilePicture) {
       data.append("profilePicture", formData.profilePicture);
     }
@@ -153,12 +151,12 @@ const EditHireDesignerProfile = () => {
         response = await dispatch(createHireDesigner(data)).unwrap();
         setFormData((prevFormData) => ({
           ...prevFormData,
-          id: response.id, // Update form data with new profile ID
+          id: response.id,
         }));
         setProfileExists(true);
       }
       localStorage.setItem("hireDesignerProfile", JSON.stringify(response));
-      navigate("/hire-designer-profile");
+      navigate(`/hire-designer-profile/${response.id}`);
       Swal.fire({
         icon: "success",
         title: profileExists ? "Profile Updated" : "Profile Created",
@@ -184,7 +182,7 @@ const EditHireDesignerProfile = () => {
   return (
     <>
       <div className="back-to-profile-container">
-        <Link to="/hire-designer-profile">
+        <Link to={`/hire-designer-profile/${hireDesignerId}`}>
           <IoCaretBack />
           Back to Profile
         </Link>

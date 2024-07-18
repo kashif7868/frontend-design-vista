@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import { MdLocationPin, MdEdit, MdDownloadForOffline } from "react-icons/md";
 import { useSelector, useDispatch } from "react-redux";
 import { useAuth } from "../../context/authContext";
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
 import defaultUserImage from "../../assets/images/default-user.png";
 import { FaFacebook, FaLinkedinIn, FaGithub } from "react-icons/fa";
 import { getHireDesignerById } from "../../app/features/hireDesignerSlice";
@@ -18,60 +18,53 @@ import "../../assets/css/pagesCss/profile.css";
 import Status from "../Service/Status";
 
 const HireDesignerProfile = ({ coverImageId }) => {
+  const { hireDesignerId } = useParams();
   const [activeLink, setActiveLink] = useState("status");
-  const { user, role } = useAuth();
+  const { user } = useAuth();
   const dispatch = useDispatch();
   const profile = useSelector((state) => state.hireDesigner.designer);
   const status = useSelector((state) => state.hireDesigner.status);
   const bannerImage = useSelector((state) => state.coverBanner.bannerImage);
   const coverBannerStatus = useSelector((state) => state.coverBanner.status);
-  const currentCoverImageId = useSelector((state) => state.coverBanner.coverImageId);
+  const currentCoverImageId = useSelector(
+    (state) => state.coverBanner.coverImageId
+  );
 
   useEffect(() => {
-    if (user && user.id && role === "hireDesigner") {
-      dispatch(getHireDesignerById(user.id))
+    if (hireDesignerId) {
+      dispatch(getHireDesignerById(hireDesignerId))
         .unwrap()
         .then((profile) => {
-          localStorage.setItem("hireDesignerProfile", JSON.stringify(profile));
+          // Handle successful profile fetch
         })
         .catch((error) => {
-          if (error === 'Hire Designer not found') {
-            localStorage.removeItem("hireDesignerProfile");
+          if (error === "Hire Designer not found") {
+            // Handle error
           }
         });
     }
-  }, [user, role, dispatch]);
+  }, [hireDesignerId, dispatch]);
 
   useEffect(() => {
-    const storedBannerImage = localStorage.getItem("bannerImage");
-    const storedCoverImageId = localStorage.getItem("coverImageId");
-
-    if (storedBannerImage && storedCoverImageId) {
-      dispatch({
-        type: "coverBanner/fetchCoverImageById/fulfilled",
-        payload: { image: storedBannerImage, id: storedCoverImageId },
-      });
-    } else if (user && user.id && role === "hireDesigner") {
+    if (hireDesignerId) {
       if (coverImageId) {
         dispatch(fetchCoverImageById(coverImageId));
       } else {
         dispatch(clearBannerImage());
       }
     }
-  }, [coverImageId, dispatch, user, role]);
+  }, [coverImageId, dispatch, hireDesignerId]);
 
-  if (!user || !user.id || status === "loading" || coverBannerStatus === "loading") {
+  if (status === "loading" || coverBannerStatus === "loading") {
     return <div>Loading...</div>;
   }
 
   const handleBannerUpload = (event) => {
     const file = event.target.files[0];
-    if (file && user && user.id) {
-      dispatch(createCoverImage({ userId: user.id, imageFile: file }))
+    if (file && hireDesignerId) {
+      dispatch(createCoverImage({ userId: hireDesignerId, imageFile: file }))
         .unwrap()
         .then((res) => {
-          localStorage.setItem("bannerImage", res.image);
-          localStorage.setItem("coverImageId", res.id);
           toast.success("Banner image uploaded successfully!");
         })
         .catch((error) => {
@@ -82,12 +75,10 @@ const HireDesignerProfile = ({ coverImageId }) => {
   };
 
   const handleRemoveBanner = () => {
-    if (currentCoverImageId && user && user.id) {
+    if (currentCoverImageId && hireDesignerId) {
       dispatch(deleteCoverImage(currentCoverImageId))
         .unwrap()
         .then(() => {
-          localStorage.removeItem("bannerImage");
-          localStorage.removeItem("coverImageId");
           toast.success("Banner image removed successfully!");
         })
         .catch((error) => {
@@ -99,12 +90,16 @@ const HireDesignerProfile = ({ coverImageId }) => {
 
   const handleReplaceBanner = (event) => {
     const file = event.target.files[0];
-    if (file && user && user.id) {
+    if (file && hireDesignerId) {
       if (currentCoverImageId) {
-        dispatch(updateCoverImage({ coverImageId: currentCoverImageId, imageFile: file }))
+        dispatch(
+          updateCoverImage({
+            coverImageId: currentCoverImageId,
+            imageFile: file,
+          })
+        )
           .unwrap()
           .then((res) => {
-            localStorage.setItem("bannerImage", res.image);
             toast.success("Banner image replaced successfully!");
           })
           .catch((error) => {
@@ -145,8 +140,9 @@ const HireDesignerProfile = ({ coverImageId }) => {
                   Replace Image
                   <input
                     type="file"
-                    id="banner-replace"
-                    accept="image/*"
+                    id="banner-re
+place"
+                    accept="image/"
                     onChange={handleReplaceBanner}
                     style={{ display: "none" }}
                   />
@@ -164,7 +160,7 @@ const HireDesignerProfile = ({ coverImageId }) => {
               <input
                 type="file"
                 id="banner-upload"
-                accept="image/*"
+                accept="image/"
                 onChange={handleBannerUpload}
                 style={{ display: "none" }}
               />
@@ -178,7 +174,6 @@ const HireDesignerProfile = ({ coverImageId }) => {
           </div>
         )}
       </div>
-
       <div className="profile-container">
         <div className="profile-left">
           <div className="user-profile-info">
@@ -208,7 +203,7 @@ const HireDesignerProfile = ({ coverImageId }) => {
             </div>
             <div className="edit-profile-container">
               <Link
-                to="/edit-hire-designer-profile"
+                to={`/edit-hire-designer-profile/${hireDesignerId}`}
                 className="edit-profile-btn"
               >
                 <MdEdit />

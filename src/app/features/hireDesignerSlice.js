@@ -1,3 +1,4 @@
+// src/app/features/hireDesignerSlice.js
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
 
@@ -9,6 +10,7 @@ const initialState = {
   designers: [],
   status: 'idle',
   error: null,
+  hireDesignerId: null,
 };
 
 export const createHireDesigner = createAsyncThunk(
@@ -96,7 +98,8 @@ const hireDesignerSlice = createSlice({
       state.designer = initialState.designer;
       state.status = 'idle';
       state.error = null;
-      localStorage.removeItem("hireDesignerProfile"); // Remove from local storage
+      state.hireDesignerId = null;
+      localStorage.removeItem("hireDesignerProfile");
     },
   },
   extraReducers: (builder) => {
@@ -107,6 +110,7 @@ const hireDesignerSlice = createSlice({
       .addCase(createHireDesigner.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.designer = action.payload;
+        state.hireDesignerId = action.payload.id;
       })
       .addCase(createHireDesigner.rejected, (state, action) => {
         state.status = 'failed';
@@ -129,6 +133,7 @@ const hireDesignerSlice = createSlice({
       .addCase(getHireDesignerById.fulfilled, (state, action) => {
         state.status = 'succeeded';
         state.designer = action.payload;
+        state.hireDesignerId = action.payload.id;
       })
       .addCase(getHireDesignerById.rejected, (state, action) => {
         state.status = 'failed';
@@ -140,6 +145,7 @@ const hireDesignerSlice = createSlice({
       .addCase(deleteHireDesigner.fulfilled, (state) => {
         state.status = 'succeeded';
         state.designer = initialState.designer;
+        state.hireDesignerId = null;
       })
       .addCase(deleteHireDesigner.rejected, (state, action) => {
         state.status = 'failed';

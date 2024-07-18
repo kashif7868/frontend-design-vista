@@ -1,3 +1,4 @@
+// src/components/Setting.js
 import React, { useState } from "react";
 import { IoCaretBack } from "react-icons/io5";
 import { Link } from "react-router-dom";

@@ -383,7 +383,7 @@ const Navbar = () => {
                         </li>
                         <li>
                           <Link
-                            to='/hire-designer-profile'
+                            to='/hire-designer-profile/:hireDesignerId'
                             onClick={() => handleProfileClick('hireDesigner')}
                           >
                             <FaUser className='user-icon' />

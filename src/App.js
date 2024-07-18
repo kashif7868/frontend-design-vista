@@ -49,8 +49,8 @@ function AppContent() {
         <Route path="/designer-profile-view/:id" element={<DesignerViewProfile />} />
         <Route path="/designer-profile/:id" element={<DesignerProfile />} />
         <Route path="/edit-designer-profile/:id" element={<EditDesignerProfile />} />
-        <Route path="/hire-designer-profile" element={<HireDesignerProfile />} />
-        <Route path="/edit-hire-designer-profile" element={<EditHireDesignerProfile />} />
+        <Route path="/hire-designer-profile/:hireDesignerId" element={<HireDesignerProfile />} />
+        <Route path="/edit-hire-designer-profile/:hireDesignerId" element={<EditHireDesignerProfile />} />
         <Route path="/setting" element={<Setting />} />
         <Route path="/help" element={<Help />} />
       </Routes>

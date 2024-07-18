@@ -1,10 +1,11 @@
+// src/context/authContext.js
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import Swal from "sweetalert2";
 import axios from "axios";
 import { useDispatch } from "react-redux";
-import { clearProfile as clearDesignerProfile } from "../app/features/designerSlice"; // Import the clearProfile action for designer
-import { clearProfile as clearHireDesignerProfile } from "../app/features/hireDesignerSlice"; // Import the clearProfile action for hire designer
+import { clearProfile as clearDesignerProfile } from "../app/features/designerSlice";
+import { clearProfile as clearHireDesignerProfile } from "../app/features/hireDesignerSlice";
 import defaultUserPicture from "../assets/images/default-user.png";
 
 const AuthContext = createContext();
@@ -13,7 +14,7 @@ export const useAuth = () => useContext(AuthContext);
 
 export const AuthProvider = ({ children }) => {
   const navigate = useNavigate();
-  const dispatch = useDispatch(); // Initialize dispatch
+  const dispatch = useDispatch();
 
   const [user, setUser] = useState(JSON.parse(localStorage.getItem("user")));
   const [accessToken, setAccessToken] = useState(localStorage.getItem("accessToken"));
@@ -31,8 +32,8 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("refreshToken");
     localStorage.removeItem("designerProfile");
     localStorage.removeItem("hireDesignerProfile");
-    dispatch(clearDesignerProfile()); // Dispatch action to clear designer profile
-    dispatch(clearHireDesignerProfile()); // Dispatch action to clear hire designer profile
+    dispatch(clearDesignerProfile());
+    dispatch(clearHireDesignerProfile());
   }, [dispatch]);
 
   useEffect(() => {
@@ -83,8 +84,8 @@ export const AuthProvider = ({ children }) => {
       setRole(newUser.role);
 
       localStorage.setItem("user", JSON.stringify(newUser));
-      dispatch(clearDesignerProfile()); // Clear profile state for new user
-      dispatch(clearHireDesignerProfile()); // Clear hire designer profile state for new user
+      dispatch(clearDesignerProfile());
+      dispatch(clearHireDesignerProfile());
 
       navigate("/");
 
@@ -120,8 +121,8 @@ export const AuthProvider = ({ children }) => {
       setRole(user.role);
 
       localStorage.setItem("user", JSON.stringify(user));
-      dispatch(clearDesignerProfile()); // Clear profile state for new user
-      dispatch(clearHireDesignerProfile()); // Clear hire designer profile state for new user
+      dispatch(clearDesignerProfile());
+      dispatch(clearHireDesignerProfile());
 
       navigate("/");
 
@@ -152,8 +153,8 @@ export const AuthProvider = ({ children }) => {
       );
 
       clearTokens();
-      dispatch(clearDesignerProfile()); // Clear profile state on logout
-      dispatch(clearHireDesignerProfile()); // Clear hire designer profile state on logout
+      dispatch(clearDesignerProfile());
+      dispatch(clearHireDesignerProfile());
 
       Swal.fire({
         icon: "success",
@@ -197,8 +198,8 @@ export const AuthProvider = ({ children }) => {
       });
 
       clearTokens();
-      dispatch(clearDesignerProfile()); // Clear profile state on account deletion
-      dispatch(clearHireDesignerProfile()); // Clear hire designer profile state on account deletion
+      dispatch(clearDesignerProfile());
+      dispatch(clearHireDesignerProfile());
 
       Swal.fire({
         icon: "success",
