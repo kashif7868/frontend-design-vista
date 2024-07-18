@@ -10,7 +10,7 @@ import {
   addWork,
   editWork,
   deleteWork,
-} from "./../../app/features/worksSlice";
+} from "./../../app/features/workSlice";
 import { toast } from "react-toastify";
 
 const Work = () => {

@@ -86,7 +86,7 @@ export const AuthProvider = ({ children }) => {
       dispatch(clearDesignerProfile()); // Clear profile state for new user
       dispatch(clearHireDesignerProfile()); // Clear hire designer profile state for new user
 
-      navigate("/profile_setup");
+      navigate("/");
 
       Swal.fire({
         icon: "success",

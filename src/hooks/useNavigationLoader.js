@@ -12,6 +12,7 @@ const useNavigationLoader = () => {
       "/hiredesigner",
       "/edit-designer-profile",
       "/designer-profile",
+      "/designer-profile-view/:id",
       "/edit-hire-designer-profile",
       "/hire-designer-profile",
       "/login_signUp",
